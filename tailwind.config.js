@@ -9,58 +9,54 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#F6F7F5',
-        foreground: '#2F3A36',
-
-        card: '#E8E6E1',
-        cardForeground: 'hsl(158 11% 21%)',
-
-        popover: "hsl(43 14% 89%)",
-        popoverForeground: "hsl(158 11% 21%)",
-
         /* Brand */
         primary: "hsl(153 23% 59%)",
         primaryForeground: "#ffffff",
 
         secondary: "hsl(90 11% 93%)",
         secondaryForeground: "hsl(158 11% 21%)",
-
-        muted: "hsl(43 14% 92%)",
-        mutedForeground: "hsl(158 8% 45%)",
-
-        accent: "hsl(150 26% 56%)",
-        accentForeground: "hsl(150 30% 20%)",
-
-        destructive: "hsl(0 65% 50%)",
-
-        /* Routine-specific */
+        popover: "hsl(43 14% 89%)",
+        popoverForeground: "hsl(158 11% 21%)",
+        
+        background: '#F6F7F5',
+        foreground: '#2F3A36',
+        card: '#E8E6E1',
+        cardForeground: '#2F3A36',
+        muted: '#EAEAEA',
+        mutedForeground: '#767676',
+        // Routine types
         laundry: {
-          DEFAULT: "hsl(197 31% 67%)",
-          bg: "hsl(197 31% 94%)",
-          fg: "hsl(197 35% 25%)",
+          DEFAULT: '#8FB8C8',
+          bg: '#EEF6FA',
+          fg: '#2C5363',
         },
-
         plant: {
-          DEFAULT: "hsl(150 26% 50%)",
-          bg: "hsl(150 26% 92%)",
-          fg: "hsl(150 30% 20%)",
+          DEFAULT: '#6FAF8F',
+          bg: '#EAF7F0',
+          fg: '#2F5A46',
         },
-
         pet: {
-          DEFAULT: "hsl(35 55% 55%)",
-          bg: "hsl(35 55% 92%)",
-          fg: "hsl(35 50% 25%)",
+          DEFAULT: '#F2B45A',
+          bg: '#FCEEDB',
+          fg: '#6B3E0A',
         },
-
         trash: {
-          DEFAULT: "hsl(280 25% 55%)",
-          bg: "hsl(280 25% 93%)",
-          fg: "hsl(280 25% 25%)",
+          DEFAULT: '#9B7CC2',
+          bg: '#F2EDF8',
+          fg: '#4B3172',
+        },
+        status: {
+          overdue: '#FEE2E2',
+          done: '#D1FAE5',
+          active: '#DBEAFE',
         },
       },
       borderRadius: {
-        lg: 16,
         xl: 20,
+        lg: 16,
+      },
+      boxShadow: {
+        card: '0 8px 30px -8px rgba(47,58,54,0.08)',
       },
     },
   },
