@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TabIcon = ({ focused, name }: any) => {
   if (focused){
@@ -16,6 +17,7 @@ const TabIcon = ({ focused, name }: any) => {
 
 const _Layout = () => {
   return (
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
     <Tabs
     screenOptions={{
       tabBarItemStyle: {
@@ -27,7 +29,7 @@ const _Layout = () => {
       tabBarStyle: {
         borderRadius: 50,
         marginHorizontal: 15,
-        marginBottom: 36,
+        marginBottom: 25,
         height: 50,
         position: 'absolute',
         overflow: 'hidden',
@@ -78,6 +80,7 @@ const _Layout = () => {
         }}
         />
     </Tabs>
+    </SafeAreaView>
   )
 }
 
