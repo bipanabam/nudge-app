@@ -1,7 +1,7 @@
-import { Routine } from '@/types/routine';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Routine } from "@/types/routine";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const STORAGE_KEY = 'routines';
+const STORAGE_KEY = "routines";
 
 const reviveRoutine = (r: any): Routine => ({
   ...r,
@@ -20,6 +20,19 @@ export const addRoutine = async (routine: Routine) => {
   const routines = await getRoutines();
   await AsyncStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify([...routines, routine])
+    JSON.stringify([...routines, routine]),
   );
 };
+
+export async function updateRoutine(updatedRoutine: Routine) {
+  const stored = await AsyncStorage.getItem(STORAGE_KEY);
+  if (!stored) return;
+
+  const routines = JSON.parse(stored) as Routine[];
+
+  const updated = routines.map(r =>
+    r.id === updatedRoutine.id ? updatedRoutine : r
+  );
+
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+}
