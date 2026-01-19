@@ -2,13 +2,14 @@ import { Bell, Clock, Info, Smartphone, Trash2 } from "lucide-react-native";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useNotifications } from "@/app/context/NotificationsContext";
 import { NudgeLogo } from "@/components/NudgeLogo";
 import { SettingsBanner } from "@/components/settings/SettingsBanner";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 
 export default function Settings() {
-  const notificationsEnabled = false;
+  const { enabled: notificationsEnabled } = useNotifications();
 
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-background">
@@ -31,7 +32,7 @@ export default function Settings() {
           </View>
 
           {/* Banner */}
-          <SettingsBanner enabled={notificationsEnabled} onEnable={() => {}} />
+          <SettingsBanner />
 
           <View className="mt-8 gap-8">
             <SettingsSection title="Notifications">

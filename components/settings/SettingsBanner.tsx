@@ -1,13 +1,45 @@
 import { BellOff, BellRing } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
-export function SettingsBanner({
-  enabled,
-  onEnable,
-}: {
-  enabled: boolean;
-  onEnable?: () => void;
-}) {
+import { useNotifications } from "@/app/context/NotificationsContext";
+import Toast from "react-native-toast-message";
+
+const STORAGE_KEY = "notificationsEnabled";
+
+export function SettingsBanner() {
+  const { enabled, loading, toggle } = useNotifications();
+
+  if (loading) return null;
+
+  const handlePress = async () => {
+    const prev = enabled;
+    await toggle();
+
+    if (!prev && !enabled) {
+      // permission denied
+      Toast.show({
+        type: "error",
+        text1: "Permission denied",
+        text2:
+          "Enable notifications in your device settings to receive reminders.",
+      });
+    } else if (!prev && enabled) {
+      Toast.show({
+        type: "success",
+        text1: "Notifications enabled",
+        text2: "You’ll receive reminders even when the app is closed.",
+      });
+    } else if (prev && !enabled) {
+      Toast.show({
+        type: "info",
+        text1: "Notifications disabled",
+        text2: "You will no longer receive reminders.",
+      });
+    }
+  };
+
+  if (loading) return null;
+
   return (
     <View
       className={`
@@ -41,7 +73,7 @@ export function SettingsBanner({
 
         {!enabled && (
           <Pressable
-            onPress={onEnable}
+            onPress={handlePress}
             className="mt-3 self-start px-4 py-2 bg-primary rounded-2xl"
           >
             <Text className="text-primaryForeground font-semibold text-md">
