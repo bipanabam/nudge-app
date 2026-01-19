@@ -3,6 +3,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { useEffect, useRef, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ConfirmDeleteSheet } from "@/components/ConfirmDeleteSheet";
 import { FloatingAddButton } from "@/components/FloatingAddButton";
@@ -44,7 +45,7 @@ export default function Index() {
   }, []);
 
   return (
-    <>
+    <SafeAreaView edges={["top"]} className="flex-1">
       <View className="flex-1 bg-background">
         <View className="flex-1 p-4 rounded-xl">
           <ScrollView
@@ -128,6 +129,6 @@ export default function Index() {
           actionsSheetRef.current?.dismiss();
         }}
       />
-    </>
+    </SafeAreaView>
   );
 }
