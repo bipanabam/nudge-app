@@ -1,6 +1,6 @@
-export type RoutineType = 'laundry' | 'plant' | 'pet' | 'trash';
+export type RoutineType = "laundry" | "plant" | "pet" | "trash";
 
-export type RoutineStatus = 'idle' | 'active' | 'done' | 'overdue';
+export type RoutineStatus = "idle" | "active" | "done" | "overdue";
 
 export interface Routine {
   id: string;
@@ -11,6 +11,7 @@ export interface Routine {
   scheduleConfig: ScheduleConfig;
   isActive: boolean;
   createdAt: Date;
+  notificationIds?: string[];
 }
 
 export interface ScheduleConfig {
@@ -32,19 +33,27 @@ export interface ScheduleConfig {
 // helpers
 export const getRoutineIcon = (type: RoutineType) => {
   switch (type) {
-    case 'laundry': return '🧺';
-    case 'plant': return '🌱';
-    case 'pet': return '🐶';
-    case 'trash': return '🗑️';
+    case "laundry":
+      return "🧺";
+    case "plant":
+      return "🌱";
+    case "pet":
+      return "🐶";
+    case "trash":
+      return "🗑️";
   }
 };
 
 export const getActionLabel = (type: RoutineType) => {
   switch (type) {
-    case 'laundry': return 'Laundry Done';
-    case 'plant': return 'Watered';
-    case 'pet': return 'Fed';
-    case 'trash': return 'Taken out';
+    case "laundry":
+      return "Laundry Done";
+    case "plant":
+      return "Watered";
+    case "pet":
+      return "Fed";
+    case "trash":
+      return "Taken out";
   }
 };
 
@@ -52,20 +61,106 @@ export const getActionLabel = (type: RoutineType) => {
 export const getRoutineStatus = (routine: Routine): RoutineStatus => {
   const now = new Date();
 
-  if (routine.type === 'laundry') {
-    if (routine.nextReminderAt && routine.nextReminderAt > now) {
-      return 'active';
-    }
-    return 'idle';
-  }
+  switch (routine.type) {
+    case "laundry":
+      if (!routine.nextReminderAt) return "idle";
+      if (
+        routine.lastCompletedAt &&
+        routine.lastCompletedAt >= routine.nextReminderAt
+      )
+        return "done";
+      if (routine.nextReminderAt > now) return "active";
+      return "idle";
 
-  if (routine.nextReminderAt && routine.nextReminderAt <= now) {
-    return 'overdue';
+    case "plant":
+    case "pet":
+    case "trash":
+      if (routine.nextReminderAt && routine.nextReminderAt <= now)
+        return "overdue";
+      if (
+        routine.lastCompletedAt &&
+        routine.lastCompletedAt >= routine.nextReminderAt!
+      )
+        return "done";
+      return "idle";
   }
+};
 
-  if (routine.lastCompletedAt) {
-    return 'done';
+// action button
+import { Feather } from "@expo/vector-icons";
+
+type ActionConfig = {
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+  action: "start" | "complete";
+};
+
+export const getRoutineActionConfig = (
+  routine: Routine,
+  status: RoutineStatus,
+): ActionConfig => {
+  switch (routine.type) {
+    case "laundry":
+      if (status === "idle") {
+        return {
+          label: `Start Laundry (${routine.scheduleConfig.durationMinutes} min)`,
+          icon: "clock",
+          action: "start",
+        };
+      }
+      if (status === "active") {
+        return {
+          label: "Laundry Done",
+          icon: "check",
+          action: "complete",
+        };
+      }
+      return {
+        label: "Laundry Done",
+        icon: "check",
+        action: "complete",
+      };
+
+    case "plant":
+      if (status === "done") {
+        return {
+          label: "Watered",
+          icon: "check",
+          action: "complete",
+        };
+      }
+      return {
+        label: status === "overdue" ? "Water Now!" : "Water Plant",
+        icon: "clock",
+        action: "complete",
+      };
+
+    case "pet":
+      if (status === "done") {
+        return {
+          label: "Fed",
+          icon: "check",
+          action: "complete",
+        };
+      }
+      return {
+        label: status === "overdue" ? "Feed Now!" : "Feed Pet",
+        icon: "clock",
+        action: "complete",
+      };
+
+    case "trash":
+      if (status === "done") {
+        return {
+          label: "Taken Out",
+          icon: "check",
+          action: "complete",
+        };
+      }
+      return {
+        label: status === "overdue" ? "Take Out Now!" : "Take Out Trash",
+        icon: "clock",
+        action: "complete",
+      };
   }
-
-  return 'idle';
 };

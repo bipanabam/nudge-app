@@ -1,8 +1,8 @@
 import {
   Routine,
   RoutineStatus,
-  getActionLabel,
-  getRoutineIcon,
+  getRoutineActionConfig,
+  getRoutineIcon
 } from "@/types/routine";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
@@ -81,6 +81,15 @@ export const RoutineCard = ({
     idle: "bg-muted text-mutedForeground",
   }[status];
 
+  const action = getRoutineActionConfig(routine, status);
+  const handleActionPress = () => {
+    if (action.action === "start") {
+      onStartLaundry?.(routine.id);
+    } else {
+      onComplete(routine.id);
+    }
+  };
+
   return (
     <Pressable
       className={`rounded-xl p-5 mb-4 ${styles.bg}`}
@@ -117,27 +126,13 @@ export const RoutineCard = ({
         </View>
       </View>
       {/* Action */}
-      {isLaundryIdle ? (
-        <Pressable
-          className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
-          onPress={handleStartLaundry}
-        >
-          <Feather name="check" color={"white"} size={20} />
-          <Text className="font-bold text-white">
-            Start Laundry ({routine.scheduleConfig.durationMinutes} min)
-          </Text>
-        </Pressable>
-      ) : (
-        <Pressable
-          className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
-          onPress={handleComplete}
-        >
-          <Feather name="check" color={"white"} size={20} />
-          <Text className="font-bold text-white">
-            {isLaundryReady ? "Laundry Done" : getActionLabel(routine.type)}
-          </Text>
-        </Pressable>
-      )}
+      <Pressable
+        className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
+        onPress={handleActionPress}
+      >
+        <Feather name={action.icon} color={"white"} size={20} />
+        <Text className="font-bold text-white">{action.label}</Text>
+      </Pressable>
     </Pressable>
   );
 };

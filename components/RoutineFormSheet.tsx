@@ -1,5 +1,8 @@
 import { buildScheduleConfig } from "@/factories/buildScheduleConfig";
-import { createRoutine } from "@/factories/createRoutine";
+import {
+  initRoutine,
+  updateRoutineWithNotifications,
+} from "@/factories/routineManager";
 import { addRoutine, updateRoutine } from "@/storage/routineStorage";
 import { Routine, RoutineType } from "@/types/routine";
 import { Feather } from "@expo/vector-icons";
@@ -188,20 +191,20 @@ export const RoutineFormSheet = forwardRef<
       });
 
       if (mode === "add") {
-        await addRoutine(
-          createRoutine({
-            type,
-            name: name || routineTypeConfig[type].label,
-            schedule,
-          }),
-        );
+        const routine = await initRoutine({
+          type,
+          name: name || routineTypeConfig[type].label,
+          schedule,
+        });
+        await addRoutine(routine);
       } else if (mode === "edit" && routine) {
-        await updateRoutine({
-          ...routine,
+        const updatedRoutine = await updateRoutineWithNotifications(routine, {
           name: name || routineTypeConfig[type].label,
           type,
           scheduleConfig: schedule,
         });
+
+        await updateRoutine(updatedRoutine);
       }
       Toast.show({
         type: "success",

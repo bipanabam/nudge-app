@@ -18,38 +18,41 @@ module.exports = {
         secondaryForeground: "hsl(158 11% 21%)",
         popover: "hsl(43 14% 89%)",
         popoverForeground: "hsl(158 11% 21%)",
-        
-        background: '#F6F7F5',
-        foreground: '#2F3A36',
-        card: '#E8E6E1',
-        cardForeground: '#2F3A36',
-        muted: '#EAEAEA',
-        mutedForeground: '#767676',
+
+        background: "#F6F7F5",
+        foreground: "#2F3A36",
+        card: "#E8E6E1",
+        cardForeground: "#2F3A36",
+        muted: "#EAEAEA",
+        mutedForeground: "#767676",
+        destructive: "#D22D2D",
+        destructiveForeground: "#FFFFFF",
+
         // Routine types
         laundry: {
-          DEFAULT: '#8FB8C8',
-          bg: '#EEF6FA',
-          fg: '#2C5363',
+          DEFAULT: "#8FB8C8",
+          bg: "#EEF6FA",
+          fg: "#2C5363",
         },
         plant: {
-          DEFAULT: '#6FAF8F',
-          bg: '#EAF7F0',
-          fg: '#2F5A46',
+          DEFAULT: "#6FAF8F",
+          bg: "#EAF7F0",
+          fg: "#2F5A46",
         },
         pet: {
-          DEFAULT: '#F2B45A',
-          bg: '#FCEEDB',
-          fg: '#6B3E0A',
+          DEFAULT: "#F2B45A",
+          bg: "#FCEEDB",
+          fg: "#6B3E0A",
         },
         trash: {
-          DEFAULT: '#9B7CC2',
-          bg: '#F2EDF8',
-          fg: '#4B3172',
+          DEFAULT: "#9B7CC2",
+          bg: "#F2EDF8",
+          fg: "#4B3172",
         },
         status: {
-          overdue: '#FEE2E2',
-          done: '#D1FAE5',
-          active: '#DBEAFE',
+          overdue: "#FEE2E2",
+          done: "#D1FAE5",
+          active: "#DBEAFE",
         },
       },
       borderRadius: {
@@ -57,9 +60,9 @@ module.exports = {
         lg: 16,
       },
       boxShadow: {
-        card: '0 8px 30px -8px rgba(47,58,54,0.08)',
+        card: "0 8px 30px -8px rgba(47,58,54,0.08)",
       },
     },
   },
   plugins: [],
-}
+};
