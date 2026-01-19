@@ -30,9 +30,26 @@ export async function updateRoutine(updatedRoutine: Routine) {
 
   const routines = JSON.parse(stored) as Routine[];
 
-  const updated = routines.map(r =>
-    r.id === updatedRoutine.id ? updatedRoutine : r
+  const updated = routines.map((r) =>
+    r.id === updatedRoutine.id ? updatedRoutine : r,
   );
 
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }
+
+export const getRoutineById = async (id: string): Promise<Routine | null> => {
+  const routines = await getRoutines();
+  return routines.find((r) => r.id === id) ?? null;
+};
+
+export const saveRoutine = async (routine: Routine) => {
+  const routines = await getRoutines();
+
+  const exists = routines.some((r) => r.id === routine.id);
+
+  const updated = exists
+    ? routines.map((r) => (r.id === routine.id ? routine : r))
+    : [...routines, routine];
+
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+};
