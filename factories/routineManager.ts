@@ -1,6 +1,13 @@
+import { addHistoryEntry } from "@/storage/historyStorage";
+import { saveRoutine } from "@/storage/routineStorage";
 import { Routine, RoutineType, ScheduleConfig } from "@/types/routine";
 import { scheduleRoutineNotifications } from "@/utils/routineNotifications";
 import * as Crypto from "expo-crypto";
+import { EventRegister } from "react-native-event-listeners";
+
+export const emitHistoryUpdate = () => {
+  EventRegister.emit("historyUpdated");
+};
 
 const generateId = () => Crypto.randomUUID();
 
@@ -59,16 +66,27 @@ export const initRoutine = async (params: {
 };
 
 export const completeRoutine = async (routine: Routine) => {
-  routine.lastCompletedAt = new Date();
+  const now = new Date();
+  routine.lastCompletedAt = now;
 
   // Compute next reminder (for laundry or plant)
   routine.nextReminderAt = computeNextReminder(
     routine.type,
     routine.scheduleConfig,
-    new Date(),
+    now,
   );
 
+  await addHistoryEntry({
+    id: Crypto.randomUUID(),
+    routineId: routine.id,
+    name: routine.name,
+    type: routine.type,
+    completedAt: now,
+  });
+  emitHistoryUpdate(); // <-- notify listeners
+
   await scheduleRoutineNotifications(routine);
+  await saveRoutine(routine);
 };
 
 export const updateRoutineWithNotifications = async (

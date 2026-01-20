@@ -11,7 +11,12 @@ import { RoutineActionsSheet } from "@/components/RoutineActionsSheet";
 import { RoutineCard } from "@/components/RoutineCard";
 import { RoutineFormSheet } from "@/components/RoutineFormSheet";
 import { defaultRoutines } from "@/data/defaultRoutines";
-import { Routine, getRoutineStatus } from "@/types/routine";
+import { completeRoutine } from "@/factories/routineManager";
+import {
+  getRoutineById,
+  saveRoutine
+} from "@/storage/routineStorage";
+import { Routine, getRoutineStatus, showRoutineToast } from "@/types/routine";
 
 import { ScrollView, Text, View } from "react-native";
 
@@ -44,6 +49,32 @@ export default function Index() {
     loadRoutines();
   }, []);
 
+  const handleCompleteRoutine = async (id: string) => {
+    const routine = await getRoutineById(id);
+    if (!routine) return;
+
+    await completeRoutine(routine);
+
+    // Update state immediately
+    setRoutines((prev) => prev.map((r) => (r.id === routine.id ? routine : r)));
+    showRoutineToast(routine, "complete");
+  };
+
+  const startLaundry = async (id: string) => {
+    const routine = await getRoutineById(id);
+    if (!routine) return;
+
+    routine.lastCompletedAt = null;
+    routine.nextReminderAt = new Date(
+      Date.now() + routine.scheduleConfig.durationMinutes! * 60_000,
+    );
+
+    await saveRoutine(routine);
+    // Refresh routines state
+    setRoutines((prev) => prev.map((r) => (r.id === routine.id ? routine : r)));
+    showRoutineToast(routine, "start");
+  };
+
   return (
     <SafeAreaView edges={["top"]} className="flex-1">
       <View className="flex-1 bg-background">
@@ -69,8 +100,8 @@ export default function Index() {
                 routine={routine}
                 status={getRoutineStatus(routine)}
                 onMorePress={() => openActions(routine)}
-                onComplete={() => {}}
-                onStartLaundry={() => {}}
+                onComplete={handleCompleteRoutine}
+                onStartLaundry={startLaundry}
               />
             ))}
           </ScrollView>

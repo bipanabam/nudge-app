@@ -92,7 +92,7 @@ import { Feather } from "@expo/vector-icons";
 type ActionConfig = {
   label: string;
   icon: keyof typeof Feather.glyphMap;
-  action: "start" | "complete";
+  action: "start" | "complete" | "noop";
 };
 
 export const getRoutineActionConfig = (
@@ -126,7 +126,7 @@ export const getRoutineActionConfig = (
         return {
           label: "Watered",
           icon: "check",
-          action: "complete",
+          action: "noop",
         };
       }
       return {
@@ -140,7 +140,7 @@ export const getRoutineActionConfig = (
         return {
           label: "Fed",
           icon: "check",
-          action: "complete",
+          action: "noop",
         };
       }
       return {
@@ -154,7 +154,7 @@ export const getRoutineActionConfig = (
         return {
           label: "Taken Out",
           icon: "check",
-          action: "complete",
+          action: "noop",
         };
       }
       return {
@@ -162,5 +162,43 @@ export const getRoutineActionConfig = (
         icon: "clock",
         action: "complete",
       };
+  }
+};
+
+import Toast from "react-native-toast-message";
+
+export const showRoutineToast = (
+  routine: Routine,
+  action: "start" | "complete",
+) => {
+  let message = "";
+
+  if (action === "start" && routine.type === "laundry") {
+    message = `🧺 Laundry started`;
+  } else if (action === "complete") {
+    switch (routine.type) {
+      case "plant":
+        message = `🌱 Watered ${routine.name}`;
+        break;
+      case "trash":
+        message = `🗑 Trash taken out`;
+        break;
+      case "pet":
+        message = `🐾 ${routine.name} fed`;
+        break;
+      case "laundry":
+        message = `🧺 Laundry completed`;
+        break;
+    }
+  }
+
+  if (message) {
+    Toast.show({
+      type: "success",
+      text1: message,
+      position: "top",
+      topOffset: 50,
+      visibilityTime: 2000,
+    });
   }
 };

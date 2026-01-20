@@ -7,6 +7,17 @@ import { NudgeLogo } from "@/components/NudgeLogo";
 import { SettingsBanner } from "@/components/settings/SettingsBanner";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { SettingsSection } from "@/components/settings/SettingsSection";
+import { scheduleNotification } from "@/utils/notifications";
+
+const testNotification = async () => {
+  const date = new Date(Date.now() + 10000); // 10 seconds later
+  await scheduleNotification(
+    "Test",
+    "Notifications are working!",
+    date,
+    "test-id",
+  );
+};
 
 export default function Settings() {
   const { enabled: notificationsEnabled } = useNotifications();
@@ -41,7 +52,7 @@ export default function Settings() {
                 label="Push Notifications"
                 value={notificationsEnabled ? "On" : "Off"}
                 highlight={!notificationsEnabled}
-                onPress={() => {}}
+                onPress={testNotification}
               />
               <SettingsItem
                 icon={Clock}

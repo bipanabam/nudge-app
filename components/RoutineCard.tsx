@@ -2,7 +2,7 @@ import {
   Routine,
   RoutineStatus,
   getRoutineActionConfig,
-  getRoutineIcon
+  getRoutineIcon,
 } from "@/types/routine";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
@@ -83,9 +83,9 @@ export const RoutineCard = ({
 
   const action = getRoutineActionConfig(routine, status);
   const handleActionPress = () => {
-    if (action.action === "start") {
+    if (routine.type === "laundry" && action.action === "start") {
       onStartLaundry?.(routine.id);
-    } else {
+    } else if (action.action === "complete") {
       onComplete(routine.id);
     }
   };
@@ -93,7 +93,6 @@ export const RoutineCard = ({
   return (
     <Pressable
       className={`rounded-xl p-5 mb-4 ${styles.bg}`}
-      onPress={handleComplete}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       style={{ transform: [{ scale: pressed ? 0.97 : 1 }] }}
