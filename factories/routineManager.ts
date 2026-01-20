@@ -18,9 +18,7 @@ const computeNextReminder = (
 ): Date | null => {
   switch (type) {
     case "laundry":
-      return config.durationMinutes
-        ? new Date(now.getTime() + config.durationMinutes * 60_000)
-        : null;
+      return null;
 
     case "plant":
       return config.intervalDays

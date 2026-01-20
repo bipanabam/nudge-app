@@ -4,12 +4,14 @@ import {
   getRoutineActionConfig,
   getRoutineIcon,
 } from "@/types/routine";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 interface RoutineCardProps {
   routine: Routine;
   status: RoutineStatus;
+  progressCount: number;
+  targetCount: number;
   onMorePress: () => void;
   onComplete: (id: string) => void;
   onStartLaundry?: (id: string) => void;
@@ -19,7 +21,7 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
   if (status === "idle") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 ${statusBadgeClass}`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-muted text-mutedForeground`}
       >
         <Feather name="clock" size={18} color={""} />
         <Text className="font-semibold text-sm capitalize">{status}</Text>
@@ -29,16 +31,40 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
   if (status === "overdue") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 ${statusBadgeClass}`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-overdue text-red-600`}
       >
         <Feather name="alert-circle" size={18} color={"red"} />
         <Text className="font-semibold text-sm capitalize">{status}</Text>
       </View>
     );
   }
+  if (status === "active") {
+    return (
+      <View
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active text-blue-600`}
+      >
+        <Feather name="alert-circle" size={18} color={"red"} />
+        <Text className="font-semibold text-sm capitalize">{status}</Text>
+      </View>
+    );
+  }
+  if (status === "partial") {
+    return (
+      <View
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-orange-50 text-orange-600`}
+      >
+        <MaterialCommunityIcons
+          name="progress-check"
+          size={18}
+          color="orange"
+        />
+        <Text className="font-semibold text-sm capitalize">{status}</Text>
+      </View>
+    );
+  }
   return (
     <View
-      className={`px-2 py-2 rounded-lg flex-row items-center gap-1 ${statusBadgeClass}`}
+      className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-done text-green-600`}
     >
       <Feather name="check" size={18} color={"#2F3A36"} />
       <Text className="font-semibold text-sm capitalize">{status}</Text>
@@ -49,16 +75,13 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
 export const RoutineCard = ({
   routine,
   status,
+  progressCount,
+  targetCount,
   onMorePress,
   onComplete,
   onStartLaundry,
 }: RoutineCardProps) => {
   const [pressed, setPressed] = useState(false);
-  const isLaundryIdle = routine.type === "laundry" && status !== "active";
-  const isLaundryReady = routine.type === "laundry" && status === "active";
-
-  const handleComplete = () => onComplete(routine.id);
-  const handleStartLaundry = () => onStartLaundry?.(routine.id);
 
   // Map routine types to their full class names
   const routineStyles = {
@@ -79,9 +102,16 @@ export const RoutineCard = ({
     done: "bg-status-done text-green-600",
     active: "bg-status-active text-blue-600",
     idle: "bg-muted text-mutedForeground",
+    partial: "bg-muted text-mutedForeground",
   }[status];
 
-  const action = getRoutineActionConfig(routine, status);
+  const action = getRoutineActionConfig(
+    routine,
+    status,
+    progressCount,
+    targetCount,
+  );
+  const progressPercent = targetCount ? (progressCount / targetCount) * 100 : 0;
   const handleActionPress = () => {
     if (routine.type === "laundry" && action.action === "start") {
       onStartLaundry?.(routine.id);
@@ -90,12 +120,25 @@ export const RoutineCard = ({
     }
   };
 
+  // Color based on status
+  const progressColor =
+    status === "done"
+      ? "bg-green-400"
+      : status === "partial"
+        ? "bg-orange-400"
+        : "bg-gray-400";
+
+  const cardOpacity = status === "done" ? 0.6 : 1;
+
   return (
     <Pressable
       className={`rounded-xl p-5 mb-4 ${styles.bg}`}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      style={{ transform: [{ scale: pressed ? 0.97 : 1 }] }}
+      style={{
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+        opacity: cardOpacity,
+      }}
     >
       {/* Header */}
       <View className="flex-row justify-between items-start mb-3">
@@ -115,7 +158,7 @@ export const RoutineCard = ({
           </View>
         </View>
         <View className="flex-row gap-2 items-center">
-          <StatusIcon status={status} statusBadgeClass={statusBadgeClass} />
+          <StatusIcon status={status} />
           <Pressable
             onPress={onMorePress}
             className="rounded-lg items-center p-3 bg-card"
@@ -124,6 +167,26 @@ export const RoutineCard = ({
           </Pressable>
         </View>
       </View>
+
+      {/* Progress Section */}
+      {targetCount > 1 && (
+        <View className="mb-3">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="text-sm text-mutedForeground">
+              Progress: {progressCount}/{targetCount} done
+            </Text>
+            <Text className="text-sm text-mutedForeground">
+              {Math.round(progressPercent)}%
+            </Text>
+          </View>
+          <View className="w-full h-2 bg-gray-200 rounded-full">
+            <View
+              className={`h-2 rounded-full ${progressColor}`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </View>
+        </View>
+      )}
       {/* Action */}
       <Pressable
         className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}

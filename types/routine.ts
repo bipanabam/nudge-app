@@ -1,6 +1,6 @@
 export type RoutineType = "laundry" | "plant" | "pet" | "trash";
 
-export type RoutineStatus = "idle" | "active" | "done" | "overdue";
+export type RoutineStatus = "idle" | "active" | "done" | "overdue" | "partial";
 
 export interface Routine {
   id: string;
@@ -57,32 +57,81 @@ export const getActionLabel = (type: RoutineType) => {
   }
 };
 
+import { isToday } from "@/hooks/helpers";
+import { getHistory } from "@/storage/historyStorage";
+
 // status calculator
-export const getRoutineStatus = (routine: Routine): RoutineStatus => {
+export const getRoutineStatus = async (
+  routine: Routine,
+): Promise<RoutineStatus> => {
   const now = new Date();
 
   switch (routine.type) {
     case "laundry":
+      const { nextReminderAt, lastCompletedAt } = routine;
+
+      if (!nextReminderAt && !lastCompletedAt) return "idle";
+      if (lastCompletedAt) return "done";
+      if (!nextReminderAt) return "idle";
+      if (nextReminderAt > now) return "active";
+
+      return "overdue";
+
+    case "plant": {
+      // get today's history for this routine
+      const history = await getHistory();
+      const todayHistory = history.filter(
+        (h) => h.routineId === routine.id && isToday(h.completedAt),
+      );
+
+      const targetCount = routine.scheduleConfig.intervalDays || 1;
+      if (todayHistory.length === 0) return "idle";
+      if (todayHistory.length < targetCount) return "partial";
+      return "done";
+    }
+
+    case "pet": {
+      const history = await getHistory();
+      const todayHistory = history.filter(
+        (h) => h.routineId === routine.id && isToday(h.completedAt),
+      );
+
+      const targetCount = routine.scheduleConfig.feedingTimes?.length || 1;
+      if (todayHistory.length === 0) return "idle";
+      if (todayHistory.length < targetCount) return "partial";
+      return "done";
+    }
+    case "trash":
       if (!routine.nextReminderAt) return "idle";
       if (
         routine.lastCompletedAt &&
         routine.lastCompletedAt >= routine.nextReminderAt
       )
         return "done";
-      if (routine.nextReminderAt > now) return "active";
+      if (routine.nextReminderAt <= now) return "overdue";
       return "idle";
+  }
+};
 
+export const getRoutineProgress = async (routine: Routine) => {
+  const history = await getHistory();
+  const todayHistory = history.filter(
+    (h) => h.routineId === routine.id && isToday(new Date(h.completedAt)),
+  );
+
+  switch (routine.type) {
     case "plant":
+      return {
+        progressCount: todayHistory.length,
+        targetCount: routine.scheduleConfig.intervalDays || 1,
+      };
     case "pet":
-    case "trash":
-      if (routine.nextReminderAt && routine.nextReminderAt <= now)
-        return "overdue";
-      if (
-        routine.lastCompletedAt &&
-        routine.lastCompletedAt >= routine.nextReminderAt!
-      )
-        return "done";
-      return "idle";
+      return {
+        progressCount: todayHistory.length,
+        targetCount: routine.scheduleConfig.feedingTimes?.length || 1,
+      };
+    default:
+      return { progressCount: 0, targetCount: 1 };
   }
 };
 
@@ -98,6 +147,8 @@ type ActionConfig = {
 export const getRoutineActionConfig = (
   routine: Routine,
   status: RoutineStatus,
+  progressCount?: number,
+  targetCount?: number,
 ): ActionConfig => {
   switch (routine.type) {
     case "laundry":
@@ -110,16 +161,12 @@ export const getRoutineActionConfig = (
       }
       if (status === "active") {
         return {
-          label: "Laundry Done",
+          label: "Laundry InProgress",
           icon: "check",
           action: "complete",
         };
       }
-      return {
-        label: "Laundry Done",
-        icon: "check",
-        action: "complete",
-      };
+      return { label: "Laundry Done", icon: "check", action: "complete" };
 
     case "plant":
       if (status === "done") {
@@ -127,6 +174,13 @@ export const getRoutineActionConfig = (
           label: "Watered",
           icon: "check",
           action: "noop",
+        };
+      }
+      if (status === "partial" && progressCount !== undefined && targetCount) {
+        return {
+          label: `Water Again (${progressCount}/${targetCount})`,
+          icon: "clock",
+          action: "complete",
         };
       }
       return {
@@ -141,6 +195,13 @@ export const getRoutineActionConfig = (
           label: "Fed",
           icon: "check",
           action: "noop",
+        };
+      }
+      if (status === "partial" && progressCount !== undefined && targetCount) {
+        return {
+          label: `Feed Again (${progressCount}/${targetCount})`,
+          icon: "clock",
+          action: "complete",
         };
       }
       return {

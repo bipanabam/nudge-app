@@ -2,7 +2,7 @@ import { NudgeLogo } from "@/components/NudgeLogo";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ConfirmDeleteSheet } from "@/components/ConfirmDeleteSheet";
@@ -10,18 +10,18 @@ import { FloatingAddButton } from "@/components/FloatingAddButton";
 import { RoutineActionsSheet } from "@/components/RoutineActionsSheet";
 import { RoutineCard } from "@/components/RoutineCard";
 import { RoutineFormSheet } from "@/components/RoutineFormSheet";
-import { defaultRoutines } from "@/data/defaultRoutines";
 import { completeRoutine } from "@/factories/routineManager";
 import {
   getRoutineById,
   saveRoutine
 } from "@/storage/routineStorage";
-import { Routine, getRoutineStatus, showRoutineToast } from "@/types/routine";
+import { Routine, showRoutineToast } from "@/types/routine";
 
+import { useRoutines } from "@/hooks/useRoutines";
 import { ScrollView, Text, View } from "react-native";
 
 export default function Index() {
-  const [routines, setRoutines] = useState<Routine[]>([]);
+  const { routines, setRoutines, refreshRoutines } = useRoutines();
   const routineFormRef = useRef<BottomSheetModal>(null);
   const actionsSheetRef = useRef<BottomSheetModal>(null);
   const confirmDeleteRef = useRef<BottomSheetModal>(null);
@@ -35,29 +35,28 @@ export default function Index() {
   const handlePresentPress = () => routineFormRef.current?.present();
   const handleClosePress = () => routineFormRef.current?.dismiss();
 
-  const loadRoutines = async () => {
-    const stored = await AsyncStorage.getItem("routines");
-    if (!stored) {
-      await AsyncStorage.setItem("routines", JSON.stringify(defaultRoutines));
-      setRoutines(defaultRoutines);
-    } else {
-      setRoutines(JSON.parse(stored));
-    }
-  };
+  // const loadRoutines = async () => {
+  //   const stored = await AsyncStorage.getItem("routines");
+  //   if (!stored) {
+  //     await AsyncStorage.setItem("routines", JSON.stringify(defaultRoutines));
+  //     setRoutines();
+  //   } else {
+  //     setRoutines(JSON.parse(stored));
+  //   }
+  // };
 
-  useEffect(() => {
-    loadRoutines();
-  }, []);
+  // useEffect(() => {
+  //   loadRoutines();
+  // }, []);
 
   const handleCompleteRoutine = async (id: string) => {
     const routine = await getRoutineById(id);
     if (!routine) return;
 
     await completeRoutine(routine);
-
-    // Update state immediately
-    setRoutines((prev) => prev.map((r) => (r.id === routine.id ? routine : r)));
     showRoutineToast(routine, "complete");
+
+    await refreshRoutines();
   };
 
   const startLaundry = async (id: string) => {
@@ -70,9 +69,9 @@ export default function Index() {
     );
 
     await saveRoutine(routine);
-    // Refresh routines state
-    setRoutines((prev) => prev.map((r) => (r.id === routine.id ? routine : r)));
     showRoutineToast(routine, "start");
+
+    await refreshRoutines();
   };
 
   return (
@@ -98,7 +97,9 @@ export default function Index() {
               <RoutineCard
                 key={routine.id}
                 routine={routine}
-                status={getRoutineStatus(routine)}
+                status={routine.status}
+                progressCount={routine.progressCount}
+                targetCount={routine.targetCount}
                 onMorePress={() => openActions(routine)}
                 onComplete={handleCompleteRoutine}
                 onStartLaundry={startLaundry}
@@ -118,7 +119,7 @@ export default function Index() {
         onDone={() => {
           setSelectedRoutine(null);
           handleClosePress();
-          loadRoutines();
+          refreshRoutines();
         }}
       />
       <RoutineActionsSheet
