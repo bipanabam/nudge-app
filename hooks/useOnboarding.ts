@@ -34,7 +34,7 @@ export const useOnboarding = () => {
     await AsyncStorage.setItem(DONE_KEY, "true");
     await AsyncStorage.removeItem(STEP_KEY);
     setStep(null);
-    router.replace("/(onboarding)");
+    router.replace("/(tabs)");
   };
 
   return { loading, step, saveStep, finish };

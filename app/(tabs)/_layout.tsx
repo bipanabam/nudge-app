@@ -1,14 +1,25 @@
 import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
+import { View } from "react-native";
 
 const TabIcon = ({ focused, name }: any) => (
-  <Feather
-    name={name}
-    size={focused ? 24 : 21}
-    color={focused ? "#7FAE9A" : "#6A7C75"}
-  />
+  <View
+    style={{
+      alignItems: "center",
+      justifyContent: "center",
+      width: 24,
+      height: 24,
+    }}
+  >
+    <Feather
+      name={name}
+      size={focused ? 24 : 22}
+      color={focused ? "#7FAE9A" : "#6A7C75"}
+    />
+  </View>
 );
+
 const _Layout = () => {
   return (
     <Tabs
@@ -17,21 +28,27 @@ const _Layout = () => {
         tabBarLabelPosition: "below-icon",
         tabBarLabelStyle: {
           fontSize: 11,
-          marginTop: -2,
+          fontWeight: "500",
+          paddingBottom: 8,
         },
-        tabBarItemStyle: {
-          justifyContent: "center",
-          alignItems: "center",
+        tabBarIconStyle: {
+          marginTop: 6,
         },
         tabBarStyle: {
-          height: 65,
-          borderRadius: 50,
-          marginHorizontal: 15,
-          marginBottom: 25,
+          height: 60,
+          borderRadius: 32,
+          marginHorizontal: 20,
+          marginBottom: 30,
           position: "absolute",
-          overflow: "hidden",
           borderWidth: 1,
           borderColor: "#7FAE9A",
+          // Add elevation and shadow for a "floating" look
+          backgroundColor: "white",
+          elevation: 5,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
         },
         tabBarActiveTintColor: "#7FAE9A",
         tabBarInactiveTintColor: "#6A7C75",

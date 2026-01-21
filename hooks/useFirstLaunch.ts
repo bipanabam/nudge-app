@@ -1,23 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-const FIRST_LAUNCH_KEY = "hasLaunchedBefore";
+const DONE_KEY = "onboardingCompleted";
 
 export const useFirstLaunch = () => {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const hasLaunched = await AsyncStorage.getItem(FIRST_LAUNCH_KEY);
-
-      if (hasLaunched === null) {
-        await AsyncStorage.setItem(FIRST_LAUNCH_KEY, "true");
-        setIsFirstLaunch(true);
-      } else {
-        setIsFirstLaunch(false);
+    const checkStatus = async () => {
+      try {
+        const done = await AsyncStorage.getItem(DONE_KEY);
+        // If 'done' is "true", it is NOT the first launch
+        setIsFirstLaunch(done !== "true");
+      } catch (e) {
+        setIsFirstLaunch(false); // Fallback to main app on error
+      } finally {
+        setIsLoading(false);
       }
-    })();
+    };
+
+    checkStatus();
   }, []);
 
-  return isFirstLaunch;
+  return { isFirstLaunch, isLoading };
 };

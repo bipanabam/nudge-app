@@ -15,7 +15,7 @@ import { registerNotificationCategories } from "@/utils/notificationsCategories"
 import { rescheduleAllRoutines } from "@/utils/routineNotifications";
 
 export default function RootLayout() {
-  const isFirstLaunch = useFirstLaunch();
+  const { isFirstLaunch, isLoading } = useFirstLaunch();
 
   useEffect(() => {
     setupAndroidNotificationChannel();
@@ -24,7 +24,7 @@ export default function RootLayout() {
     rescheduleAllRoutines();
   }, []);
 
-  if (isFirstLaunch === null) return null;
+  if (isLoading) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -36,9 +36,17 @@ export default function RootLayout() {
               <>
                 <Stack screenOptions={{ headerShown: false }}>
                   {isFirstLaunch ? (
-                    <Stack.Screen name="(onboarding)" />
+                    // Onboarding
+                    <Stack.Screen
+                      name="(onboarding)"
+                      options={{ animation: "fade" }}
+                    />
                   ) : (
-                    <Stack.Screen name="(tabs)" />
+                    // Main App
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ animation: "fade" }}
+                    />
                   )}
                 </Stack>
               </>
