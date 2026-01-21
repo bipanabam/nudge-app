@@ -17,7 +17,7 @@ interface RoutineCardProps {
   onStartLaundry?: (id: string) => void;
 }
 
-const StatusIcon = ({ status, statusBadgeClass }: any) => {
+const StatusIcon = ({ status }: any) => {
   if (status === "idle") {
     return (
       <View
@@ -33,7 +33,7 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
       <View
         className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-overdue text-red-600`}
       >
-        <Feather name="alert-circle" size={18} color={"red"} />
+        <Feather name="alert-circle" size={18} color="red" />
         <Text className="font-semibold text-sm capitalize">{status}</Text>
       </View>
     );
@@ -43,7 +43,7 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
       <View
         className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active text-blue-600`}
       >
-        <Feather name="alert-circle" size={18} color={"red"} />
+        <Feather name="alert-circle" size={18} color="blue" />
         <Text className="font-semibold text-sm capitalize">{status}</Text>
       </View>
     );
@@ -72,6 +72,18 @@ const StatusIcon = ({ status, statusBadgeClass }: any) => {
   );
 };
 
+// Map routine types to their full class names
+const routineStyles = {
+  laundry: {
+    bg: "bg-laundry-bg",
+    fg: "text-laundry-fg",
+    button: "bg-laundry",
+  },
+  plant: { bg: "bg-plant-bg", fg: "text-plant-fg", button: "bg-plant" },
+  pet: { bg: "bg-pet-bg", fg: "text-pet-fg", button: "bg-pet" },
+  trash: { bg: "bg-trash-bg", fg: "text-trash-fg", button: "bg-trash" },
+};
+
 export const RoutineCard = ({
   routine,
   status,
@@ -83,35 +95,17 @@ export const RoutineCard = ({
 }: RoutineCardProps) => {
   const [pressed, setPressed] = useState(false);
 
-  // Map routine types to their full class names
-  const routineStyles = {
-    laundry: {
-      bg: "bg-laundry-bg",
-      fg: "text-laundry-fg",
-      button: "bg-laundry",
-    },
-    plant: { bg: "bg-plant-bg", fg: "text-plant-fg", button: "bg-plant" },
-    pet: { bg: "bg-pet-bg", fg: "text-pet-fg", button: "bg-pet" },
-    trash: { bg: "bg-trash-bg", fg: "text-trash-fg", button: "bg-trash" },
-  };
-
   const styles = routineStyles[routine.type];
-
-  const statusBadgeClass = {
-    overdue: "bg-status-overdue text-red-600",
-    done: "bg-status-done text-green-600",
-    active: "bg-status-active text-blue-600",
-    idle: "bg-muted text-mutedForeground",
-    partial: "bg-muted text-mutedForeground",
-  }[status];
-
   const action = getRoutineActionConfig(
     routine,
     status,
     progressCount,
     targetCount,
   );
+  const isDisabled = action.action === "noop";
+
   const progressPercent = targetCount ? (progressCount / targetCount) * 100 : 0;
+
   const handleActionPress = () => {
     if (routine.type === "laundry" && action.action === "start") {
       onStartLaundry?.(routine.id);
@@ -189,6 +183,7 @@ export const RoutineCard = ({
       )}
       {/* Action */}
       <Pressable
+        disabled={isDisabled}
         className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
         onPress={handleActionPress}
       >

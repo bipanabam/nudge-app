@@ -1,13 +1,8 @@
-import { addHistoryEntry } from "@/storage/historyStorage";
+import { addHistoryEntry, emitHistoryUpdate } from "@/storage/historyStorage";
 import { saveRoutine } from "@/storage/routineStorage";
 import { Routine, RoutineType, ScheduleConfig } from "@/types/routine";
 import { scheduleRoutineNotifications } from "@/utils/routineNotifications";
 import * as Crypto from "expo-crypto";
-import { EventRegister } from "react-native-event-listeners";
-
-export const emitHistoryUpdate = () => {
-  EventRegister.emit("historyUpdated");
-};
 
 const generateId = () => Crypto.randomUUID();
 

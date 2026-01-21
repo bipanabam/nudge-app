@@ -1,4 +1,6 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Bell, Clock, Info, Smartphone, Trash2 } from "lucide-react-native";
+import { useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -8,6 +10,10 @@ import { SettingsBanner } from "@/components/settings/SettingsBanner";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 import { scheduleNotification } from "@/utils/notifications";
+
+import { ConfirmDeleteSheet } from "@/components/ConfirmDeleteSheet";
+import { clearAllHistory } from "@/storage/historyStorage";
+import * as Haptics from "expo-haptics";
 
 const testNotification = async () => {
   const date = new Date(Date.now() + 10000); // 10 seconds later
@@ -21,6 +27,7 @@ const testNotification = async () => {
 
 export default function Settings() {
   const { enabled: notificationsEnabled } = useNotifications();
+  const confirmDeleteRef = useRef<BottomSheetModal>(null);
 
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-background">
@@ -68,7 +75,7 @@ export default function Settings() {
                 icon={Trash2}
                 label="Clear History"
                 destructive
-                onPress={() => {}}
+                onPress={() => confirmDeleteRef.current?.present()}
               />
             </SettingsSection>
 
@@ -87,6 +94,17 @@ export default function Settings() {
           </Text>
         </ScrollView>
       </View>
+      <ConfirmDeleteSheet
+        ref={confirmDeleteRef}
+        title="Clear history?"
+        description="This will permanently delete all completed routine history."
+        onCancel={() => confirmDeleteRef.current?.dismiss()}
+        onConfirm={async () => {
+          await clearAllHistory();
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          confirmDeleteRef.current?.dismiss();
+        }}
+      />
     </SafeAreaView>
   );
 }

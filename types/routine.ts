@@ -44,18 +44,68 @@ export const getRoutineIcon = (type: RoutineType) => {
   }
 };
 
-export const getActionLabel = (type: RoutineType) => {
-  switch (type) {
-    case "laundry":
-      return "Laundry Done";
-    case "plant":
-      return "Watered";
-    case "pet":
-      return "Fed";
-    case "trash":
-      return "Taken out";
-  }
+// status helper
+type StatusConfig = {
+  bg: string;
+  text: string;
+  icon: any;
 };
+
+export const STATUS_CONFIG: Record<RoutineStatus, StatusConfig> = {
+  idle: {
+    bg: "bg-muted",
+    text: "text-mutedForeground",
+    icon: "clock",
+  },
+  active: {
+    bg: "bg-status-active",
+    text: "text-blue-600",
+    icon: "clock",
+  },
+  overdue: {
+    bg: "bg-status-overdue",
+    text: "text-red-600",
+    icon: "alert-circle",
+  },
+  partial: {
+    bg: "bg-orange-50",
+    text: "text-orange-600",
+    icon: "progress-check",
+  },
+  done: {
+    bg: "bg-status-done",
+    text: "text-green-600",
+    icon: "check",
+  },
+};
+
+// export const StatusIcon = ({ status }: { status: RoutineStatus }) => {
+//   const config = STATUS_CONFIG[status];
+
+//   return (
+//     <View
+//       className={`px-2 py-2 rounded-lg flex-row items-center gap-1 ${config.bg}`}
+//     >
+//       {config.icon}
+//       <Text className={`font-semibold text-sm capitalize ${config.text}`}>
+//         {status}
+//       </Text>
+//     </View>
+//   );
+// };
+
+// export const getActionLabel = (type: RoutineType) => {
+//   switch (type) {
+//     case "laundry":
+//       return "Laundry Done";
+//     case "plant":
+//       return "Watered";
+//     case "pet":
+//       return "Fed";
+//     case "trash":
+//       return "Taken out";
+//   }
+// };
 
 import { isToday } from "@/hooks/helpers";
 import { getHistory } from "@/storage/historyStorage";
@@ -137,7 +187,6 @@ export const getRoutineProgress = async (routine: Routine) => {
 
 // action button
 import { Feather } from "@expo/vector-icons";
-
 type ActionConfig = {
   label: string;
   icon: keyof typeof Feather.glyphMap;
@@ -226,8 +275,8 @@ export const getRoutineActionConfig = (
   }
 };
 
+// Routine Toast
 import Toast from "react-native-toast-message";
-
 export const showRoutineToast = (
   routine: Routine,
   action: "start" | "complete",
