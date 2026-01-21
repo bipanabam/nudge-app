@@ -4,11 +4,11 @@ import { useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useNotifications } from "@/app/context/NotificationsContext";
 import { NudgeLogo } from "@/components/NudgeLogo";
 import { SettingsBanner } from "@/components/settings/SettingsBanner";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { SettingsSection } from "@/components/settings/SettingsSection";
+import { useNotifications } from "@/context/NotificationsContext";
 import { scheduleNotification } from "@/utils/notifications";
 
 import { ConfirmDeleteSheet } from "@/components/ConfirmDeleteSheet";
