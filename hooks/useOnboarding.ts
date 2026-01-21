@@ -13,11 +13,11 @@ export const useOnboarding = () => {
   useEffect(() => {
     (async () => {
       const done = await AsyncStorage.getItem(DONE_KEY);
-      // if (done === "true") {
-      //   setStep(null);
-      //   setLoading(false);
-      //   return;
-      // }
+      if (done === "true") {
+        setStep(null);
+        setLoading(false);
+        return;
+      }
 
       const savedStep = await AsyncStorage.getItem(STEP_KEY);
       setStep(savedStep ? Number(savedStep) : 0);

@@ -43,15 +43,20 @@ export const scheduleNotification = async (
   body: string,
   date: Date,
   routineId: string,
+  type: string,
+  icon: string = ""
 ) => {
   const id = await Notifications.scheduleNotificationAsync({
     content: {
       title,
       body,
+      subtitle: type.toUpperCase(),
       sound: "default",
       categoryIdentifier: ROUTINE_CATEGORY,
+      color: "#2F3A36",
       data: {
         routineId,
+        icon
       },
     },
     trigger: {
@@ -72,8 +77,9 @@ export const setupAndroidNotificationChannel = async () => {
   if (Platform.OS !== "android") return;
 
   await Notifications.setNotificationChannelAsync("default", {
-    name: "Default",
-    importance: Notifications.AndroidImportance.MAX,
-    sound: "default",
+    name: "Nudges",
+    importance: Notifications.AndroidImportance.HIGH, // High shows banner, Max makes noise
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#2F3A36",
   });
 };

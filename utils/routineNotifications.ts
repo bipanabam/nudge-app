@@ -21,9 +21,32 @@ const getNextDayTime = (dayOfWeek: number, hour: number, minute: number) => {
   return date;
 };
 
+const getNotificationContent = (type: Routine["type"], name: string) => {
+  const themes = {
+    plant: {
+      title: `Thirsty Plant? 🌱`,
+      body: `${name} needs some love. Give it a quick water!`,
+    },
+    pet: {
+      title: `Feeding Time 🐾`,
+      body: `${name} is looking at their bowl! Time for breakfast/dinner.`,
+    },
+    laundry: {
+      title: `Laundry Check 🧺`,
+      body: `Time to move the ${name} load. Stay ahead of the pile!`,
+    },
+    trash: {
+      title: `Trash Day 🗑️`,
+      body: `Don't miss the pickup! Move ${name} to the curb.`,
+    },
+    default: { title: `Gentle Nudge`, body: `Time for your routine: ${name}` },
+  };
+  return themes[type] || themes.default;
+};
+
 export const scheduleRoutineNotifications = async (routine: Routine) => {
   const enabled = await areNotificationsEnabled();
-  if (!enabled) return; 
+  if (!enabled) return;
 
   const hasPermission = await requestPermissions();
   if (!hasPermission) return;
@@ -44,11 +67,14 @@ export const scheduleRoutineNotifications = async (routine: Routine) => {
   switch (type) {
     case "laundry":
       if (routine.nextReminderAt) {
+        const content = getNotificationContent(type, routine.name);
         const id = await scheduleNotification(
-          `Laundry Time!`,
-          `Start your laundry: ${routine.name}`,
+          content.title,
+          content.body,
           routine.nextReminderAt,
           routine.id,
+          routine.type,
+          "🧺",
         );
         routine.notificationIds.push(id);
       }
@@ -58,11 +84,14 @@ export const scheduleRoutineNotifications = async (routine: Routine) => {
       if (config.intervalDays) {
         const next = new Date(now);
         next.setDate(next.getDate() + config.intervalDays);
+        const content = getNotificationContent(type, routine.name);
         const id = await scheduleNotification(
-          `Water your plant 🌱`,
-          `Time to water: ${routine.name}`,
+          content.title,
+          content.body,
           next,
           routine.id,
+          routine.type,
+          "🌱",
         );
         routine.notificationIds.push(id);
       }
@@ -75,11 +104,14 @@ export const scheduleRoutineNotifications = async (routine: Routine) => {
           const date = new Date(now);
           date.setHours(hour, minute, 0, 0);
           if (date < now) date.setDate(date.getDate() + 1);
+          const content = getNotificationContent(type, routine.name);
           const id = await scheduleNotification(
-            `Feed your pet 🐾`,
-            `Time to feed: ${routine.name}`,
+            content.title,
+            content.body,
             date,
             routine.id,
+            routine.type,
+            "🐾",
           );
           routine.notificationIds.push(id);
         }
@@ -90,11 +122,14 @@ export const scheduleRoutineNotifications = async (routine: Routine) => {
       if (config.pickupDays?.length) {
         for (const day of config.pickupDays) {
           const date = getNextDayTime(day, 6, 0); // 6AM reminder
+          const content = getNotificationContent(type, routine.name);
           const id = await scheduleNotification(
-            `Take out trash 🗑️`,
-            `${config.isRecycling ? "Recycling" : "Trash"} day for ${routine.name}`,
+            content.title,
+            content.body,
             date,
             routine.id,
+            routine.type,
+            "🗑️",
           );
           routine.notificationIds.push(id);
         }

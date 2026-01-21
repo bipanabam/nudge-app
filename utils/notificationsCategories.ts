@@ -6,14 +6,14 @@ export const registerNotificationCategories = async () => {
   await Notifications.setNotificationCategoryAsync(ROUTINE_CATEGORY, [
     {
       identifier: "DONE",
-      buttonTitle: "Done",
+      buttonTitle: "Done ✅",
       options: {
         opensAppToForeground: false,
       },
     },
     {
       identifier: "SNOOZE_10",
-      buttonTitle: "Snooze 10 min",
+      buttonTitle: "Snooze 10m ⏳",
       options: {
         opensAppToForeground: false,
       },

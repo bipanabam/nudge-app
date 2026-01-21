@@ -35,11 +35,11 @@ export default function RootLayout() {
             <BottomSheetModalProvider>
               <>
                 <Stack screenOptions={{ headerShown: false }}>
-                  {/* {isFirstLaunch ? ( */}
-                  <Stack.Screen name="(onboarding)" />
-                  {/* ) : (
+                  {isFirstLaunch ? (
+                    <Stack.Screen name="(onboarding)" />
+                  ) : (
                     <Stack.Screen name="(tabs)" />
-                  )} */}
+                  )}
                 </Stack>
               </>
             </BottomSheetModalProvider>
