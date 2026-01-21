@@ -6,6 +6,8 @@ import {
   scheduleNotification,
 } from "./notifications";
 
+import { areNotificationsEnabled } from "@/utils/notifications";
+
 // Helper: get next day occurrence
 const getNextDayTime = (dayOfWeek: number, hour: number, minute: number) => {
   const now = new Date();
@@ -20,6 +22,9 @@ const getNextDayTime = (dayOfWeek: number, hour: number, minute: number) => {
 };
 
 export const scheduleRoutineNotifications = async (routine: Routine) => {
+  const enabled = await areNotificationsEnabled();
+  if (!enabled) return; 
+
   const hasPermission = await requestPermissions();
   if (!hasPermission) return;
 
@@ -99,6 +104,9 @@ export const scheduleRoutineNotifications = async (routine: Routine) => {
 };
 
 export const rescheduleAllRoutines = async () => {
+  const enabled = await areNotificationsEnabled();
+  if (!enabled) return;
+
   const routines = await getRoutines();
   for (const r of routines) {
     await scheduleRoutineNotifications(r);

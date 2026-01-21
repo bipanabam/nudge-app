@@ -1,7 +1,7 @@
 import { BellOff, BellRing } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
-import { useNotifications } from "@/app/context/NotificationsContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import Toast from "react-native-toast-message";
 
 const STORAGE_KEY = "notificationsEnabled";
