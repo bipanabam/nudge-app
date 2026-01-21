@@ -2,7 +2,7 @@ import { NudgeLogo } from "@/components/NudgeLogo";
 import { useNotifications } from "@/context/NotificationsContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { Bell } from "lucide-react-native";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 
 import FloatingIcon from "@/components/FloatingIcon";
@@ -15,7 +15,7 @@ export const OnboardingFlow = () => {
 
   if (step === null) return null;
 
-  // --- Screen 1: Welcome
+  // Screen 1: Welcome
   if (step === 0) {
     return (
       <AnimatedOnboardingContainer>
@@ -40,17 +40,17 @@ export const OnboardingFlow = () => {
     );
   }
 
-  // --- Screen 2: Notifications
+  // Screen 2: Notifications
   if (step === 1) {
     return (
-      <AnimatedOnboardingContainer>
+      <AnimatedOnboardingContainer key={step}>
         <OnboardingScreen
-          title="Gentle reminders"
-          description="Enable notifications so Nudge can gently nudge you when needed."
-          primaryLabel="Enable"
+          title="Stay on track"
+          description="We'll send a tiny nudge when your plants need water or your dog needs a treat."
+          primaryLabel="Enable gentle nudges"
           secondaryLabel="Maybe later"
           onPrimaryPress={async () => {
-            await toggle();
+            const success = await toggle();
             saveStep(2);
           }}
           onSecondaryPress={() => saveStep(2)}
@@ -58,19 +58,26 @@ export const OnboardingFlow = () => {
           step={step}
           totalSteps={3}
         >
-          <Animated.View entering={FadeInRight.duration(300)}>
-            <View className="items-center">
-              <View className="bg-muted rounded-2xl p-4 items-center justify-center w-14 h-14">
-                <Bell size={32} color="#2F3A36" />
+          <View className="items-center w-full">
+            {/* Visual Mockup of a Notification */}
+            <View className="bg-card border border-primary rounded-2xl p-4 w-64 shadow-sm flex-row items-center gap-3">
+              <View className="bg-primary/20 p-2 rounded-lg">
+                <Bell size={20} color="#2F3A36" />
+              </View>
+              <View>
+                <Text className="font-bold text-xs">Nudge 🌱</Text>
+                <Text className="text-xs text-mutedForeground">
+                  Time to water your Monstera!
+                </Text>
               </View>
             </View>
-          </Animated.View>
+          </View>
         </OnboardingScreen>
       </AnimatedOnboardingContainer>
     );
   }
 
-  // --- Screen 3: Get started
+  // Screen 3: Get started
   return (
     <AnimatedOnboardingContainer>
       <OnboardingScreen

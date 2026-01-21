@@ -1,17 +1,23 @@
+import * as Haptics from "expo-haptics";
 import { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
-import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
+import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {
   title: string;
   description: string;
   footerNote?: string;
   children?: ReactNode;
+
   primaryLabel: string;
   onPrimaryPress: () => void;
+
   secondaryLabel?: string;
   onSecondaryPress?: () => void;
   onSkip?: () => void;
+
   step?: number;
   totalSteps?: number;
 };
@@ -29,77 +35,98 @@ export const OnboardingScreen = ({
   step,
   totalSteps,
 }: Props) => {
+  const handlePress = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onPrimaryPress();
+  };
+
+  const onGestureEvent = (event: any) => {
+    // Detect swipe left to progress
+    if (
+      event.nativeEvent.translationX < -100 &&
+      event.nativeEvent.state === State.END
+    ) {
+      handlePress();
+    }
+  };
   return (
-    <View className="flex-1 bg-background px-10 justify-center">
-      <View className="gap-6">
-        <Animated.View entering={FadeInRight.duration(350).delay(50)}>
-          {children}
-        </Animated.View>
+    <PanGestureHandler onHandlerStateChange={onGestureEvent}>
+      <SafeAreaView className="flex-1 bg-background items-center justify-center px-10 pb-8">
+        <View className="flex-1 px-8 pt-12">
+          {/* Progress Header */}
+          <View className="flex-row justify-center gap-2 mb-12">
+            {Array(totalSteps)
+              .fill(0)
+              .map((_, i) => (
+                <View
+                  key={i}
+                  className={`h-1.5 rounded-full ${step === i ? "w-6 bg-primary" : "w-2 bg-muted"}`}
+                />
+              ))}
+          </View>
+          {/* Hero Content */}
+          <View className="items-center justify-center flex-1">
+            <Animated.View entering={FadeInUp.delay(200).duration(500)}>
+              {children}
+            </Animated.View>
 
-        <Animated.Text
-          entering={FadeInRight.duration(350).delay(150)}
-          className="text-3xl font-bold text-foreground"
-        >
-          {title}
-        </Animated.Text>
+            <Animated.View entering={FadeInUp.delay(400)} className="mt-10">
+              <View className="items-center">
+                <Text className="text-3xl font-bold text-foreground text-center tracking-tight">
+                  {title}
+                </Text>
+                <Text className="text-lg text-mutedForeground text-center mt-4 leading-7 px-2">
+                  {description}
+                </Text>
+              </View>
+            </Animated.View>
+          </View>
 
-        <Animated.Text
-          entering={FadeInLeft.duration(350).delay(300)}
-          className="text-base text-mutedForeground leading-6"
-        >
-          {description}
-        </Animated.Text>
+          {/* Action Footer */}
+          <View className="pb-5 gap-5">
+            <Animated.View entering={FadeIn.delay(500)}>
+              <View>
+                <Pressable
+                  onPress={handlePress}
+                  style={({ pressed }) => ({
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  })}
+                  className="bg-primary rounded-2xl py-4 items-center shadow-lg"
+                >
+                  <Text className="text-white font-bold text-lg">
+                    {primaryLabel}
+                  </Text>
+                </Pressable>
+              </View>
+            </Animated.View>
 
-        <View className="mt-8 gap-3">
-          <Pressable
-            className="bg-primary rounded-xl py-4 items-center"
-            onPress={onPrimaryPress}
-            style={({ pressed }) => ({
-              transform: [{ scale: pressed ? 0.97 : 1 }],
-            })}
-          >
-            <Text className="text-white font-bold text-base">
-              {primaryLabel}
-            </Text>
-          </Pressable>
+            {secondaryLabel && (
+              <Pressable onPress={onSecondaryPress} className="py-2">
+                <Text className="text-center text-mutedForeground font-medium">
+                  {secondaryLabel}
+                </Text>
+              </Pressable>
+            )}
 
-          {secondaryLabel && onSecondaryPress && (
-            <Pressable onPress={onSecondaryPress}>
-              <Text className="text-center text-mutedForeground">
-                {secondaryLabel}
-              </Text>
-            </Pressable>
-          )}
+            {onSkip && (
+              <Pressable
+                onPress={onSkip}
+                hitSlop={20}
+                className="active:opacity-50 items-center"
+              >
+                <Text className="text-sm font-semibold text-mutedForeground">
+                  Skip
+                </Text>
+              </Pressable>
+            )}
+          </View>
           {footerNote && (
             <Text className="text-sm text-mutedForeground mt-4 leading-5">
               {footerNote}
             </Text>
           )}
-
-          {onSkip && (
-            <Pressable onPress={onSkip}>
-              <Text className="text-center text-xs text-mutedForeground mt-6">
-                Skip for now
-              </Text>
-            </Pressable>
-          )}
-          {/* Progress dots */}
-          {step !== undefined && totalSteps !== undefined && (
-            <View className="flex-row justify-center mt-8 gap-2">
-              {Array(totalSteps)
-                .fill(0)
-                .map((_, i) => (
-                  <View
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      step === i ? "bg-primary scale-125" : "bg-muted"
-                    }`}
-                  />
-                ))}
-            </View>
-          )}
         </View>
-      </View>
-    </View>
+      </SafeAreaView>
+    </PanGestureHandler>
   );
 };
