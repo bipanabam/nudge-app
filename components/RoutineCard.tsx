@@ -45,7 +45,7 @@ const StatusIcon = ({ status }: any) => {
   if (status === "active") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active dark:bg-blue-900/30`}
       >
         <Feather name="alert-circle" size={16} color="blue" />
         <Text className="font-semibold text-sm capitalize text-blue-600">
@@ -86,35 +86,35 @@ const StatusIcon = ({ status }: any) => {
 const routineStyles = {
   laundry: {
     bg: "bg-laundry-bg",
-    dark: "bg-laundry-bg-dark",
+    dark: "dark:bg-laundry-bg-dark",
     fg: "text-laundry-fg",
-    fgDark: "text-laundry-fg-dark",
+    fgDark: "dark:text-laundry-fg-dark",
     button: "bg-laundry",
-    buttonDark: "bg-laundry-dark",
+    buttonDark: "dark:bg-laundry-dark",
   },
   plant: {
     bg: "bg-plant-bg",
-    dark: "bg-plant-bg-dark",
+    dark: "dark:bg-plant-bg-dark",
     fg: "text-plant-fg",
-    fgDark: "text-plant-fg-dark",
+    fgDark: "dark:text-plant-fg-dark",
     button: "bg-plant",
-    buttonDark: "bg-plant-dark",
+    buttonDark: "dark:bg-plant-dark",
   },
   pet: {
     bg: "bg-pet-bg",
-    dark: "bg-pet-bg-dark",
+    dark: "dark:bg-pet-bg-dark",
     fg: "text-pet-fg",
-    fgDark: "text-pet-fg-dark",
+    fgDark: "dark:text-pet-fg-dark",
     button: "bg-pet",
-    buttonDark: "bg-pet-dark",
+    buttonDark: "dark:bg-pet-dark",
   },
   trash: {
     bg: "bg-trash-bg",
-    dark: "bg-trash-bg-dark",
+    dark: "dark:bg-trash-bg-dark",
     fg: "text-trash-fg",
-    fgDark: "text-trash-fg-dark",
+    fgDark: "dark:text-trash-fg-dark",
     button: "bg-trash",
-    buttonDark: "bg-trash-dark",
+    buttonDark: "dark:bg-trash-dark",
   },
 };
 
@@ -160,7 +160,7 @@ export const RoutineCard = ({
 
   return (
     <Pressable
-      className={`rounded-xl p-5 mb-4 ${styles.bg} dark:${styles.dark}`}
+      className={`rounded-xl p-5 mb-4 ${styles.bg} ${styles.dark}`}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       style={{
@@ -171,13 +171,11 @@ export const RoutineCard = ({
       {/* Header */}
       <View className="flex-row justify-between items-start mb-3">
         <View className="flex-row items-center gap-3">
-          <Text className={`text-3xl ${styles.fg} dark:${styles.fgDark}`}>
+          <Text className={`text-3xl ${styles.fg} ${styles.fgDark}`}>
             {getRoutineIcon(routine.type)}
           </Text>
           <View>
-            <Text
-              className={`font-bold text-lg ${styles.fg} dark:${styles.fgDark}`}
-            >
+            <Text className={`font-bold text-lg ${styles.fg} ${styles.fgDark}`}>
               {routine.name}
             </Text>
             <Text className="text-sm text-mutedForeground dark:text-mutedForeground-dark">
@@ -225,7 +223,7 @@ export const RoutineCard = ({
       {/* Action */}
       <Pressable
         disabled={isDisabled}
-        className={`${styles.button} dark:${styles.buttonDark} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
+        className={`${styles.button} ${styles.buttonDark} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
         onPress={handleActionPress}
       >
         <Feather name={action.icon} color={"white"} size={20} />

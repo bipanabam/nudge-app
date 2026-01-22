@@ -10,6 +10,7 @@ export interface Routine {
   nextReminderAt: Date | null;
   scheduleConfig: ScheduleConfig;
   isActive: boolean;
+  inProgress?: boolean;
   createdAt: Date;
   notificationIds?: string[];
 }
@@ -89,15 +90,27 @@ export const getRoutineStatus = async (
   const now = new Date();
 
   switch (routine.type) {
-    case "laundry":
-      const { nextReminderAt, lastCompletedAt } = routine;
+    case "laundry": {
+      const { inProgress, nextReminderAt, lastCompletedAt } = routine;
+
+      if (inProgress) return "active";
 
       if (!nextReminderAt && !lastCompletedAt) return "idle";
-      if (lastCompletedAt) return "done";
-      if (!nextReminderAt) return "idle";
-      if (nextReminderAt > now) return "active";
 
-      return "overdue";
+      if (
+        nextReminderAt &&
+        lastCompletedAt &&
+        lastCompletedAt >= nextReminderAt
+      ) {
+        return "done";
+      }
+
+      if (nextReminderAt && nextReminderAt <= now) {
+        return "overdue";
+      }
+
+      return "idle";
+    }
 
     case "plant": {
       // get today's history for this routine

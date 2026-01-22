@@ -22,7 +22,7 @@ const testNotification = async () => {
     "Notifications are working!",
     date,
     "test-id",
-    "",
+    "🌱",
   );
 };
 

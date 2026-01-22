@@ -38,6 +38,10 @@ export default function Index() {
     if (!routine) return;
 
     await completeRoutine(routine);
+    if (routine.type === "laundry") {
+      routine.inProgress = false;
+    }
+    await saveRoutine(routine);
     showRoutineToast(routine, "complete");
 
     await refreshRoutines();
@@ -47,6 +51,7 @@ export default function Index() {
     const routine = await getRoutineById(id);
     if (!routine) return;
 
+    routine.inProgress = true;
     routine.lastCompletedAt = null;
     routine.nextReminderAt = new Date(
       Date.now() + routine.scheduleConfig.durationMinutes! * 60_000,
