@@ -1,16 +1,18 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ConfirmDeleteSheet } from "@/components/ConfirmDeleteSheet";
 import { FloatingAddButton } from "@/components/FloatingAddButton";
+import HistoryStats from "@/components/HistoryStats";
 import { RoutineActionsSheet } from "@/components/RoutineActionsSheet";
 import { RoutineCard } from "@/components/RoutineCard";
 import { RoutineFormSheet } from "@/components/RoutineFormSheet";
-import { completeRoutine } from "@/factories/routineManager";
-import { getRoutineById, saveRoutine } from "@/storage/routineStorage";
+import { completeRoutine, computeDailyStats } from "@/factories/routineManager";
+import { getRoutineById, saveRoutine, getRoutines } from "@/storage/routineStorage";
+import { getHistory } from "@/storage/historyStorage";
 import { Routine, showRoutineToast } from "@/types/routine";
 
 import Header from "@/components/Header";
@@ -24,6 +26,18 @@ export default function Index() {
   const actionsSheetRef = useRef<BottomSheetModal>(null);
   const confirmDeleteRef = useRef<BottomSheetModal>(null);
   const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(null);
+  const [stats, setStats] = useState({ done: 0, total: 0, needsAttention: 0 });
+  
+  useEffect(() => {
+    const fetchStats = async () => {
+      const routines = await getRoutines();
+      const history = await getHistory();
+    
+      const routineStats = await computeDailyStats(routines, history);
+      setStats(routineStats);
+    };
+    fetchStats();
+  }, []);
 
   const openActions = (routine: Routine) => {
     setSelectedRoutine(routine);
@@ -82,6 +96,8 @@ export default function Index() {
             <Header />
 
             {/* Stats */}
+            <HistoryStats stats={stats} />
+
             {/* Routine */}
             {routines.map((routine) => (
               <RoutineCard

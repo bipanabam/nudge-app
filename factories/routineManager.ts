@@ -1,10 +1,72 @@
-import { addHistoryEntry, emitHistoryUpdate } from "@/storage/historyStorage";
-import { saveRoutine } from "@/storage/routineStorage";
+import { isToday } from "@/hooks/helpers";
+import {
+  addHistoryEntry,
+  emitHistoryUpdate,
+  getHistory,
+} from "@/storage/historyStorage";
+import { getRoutines, saveRoutine } from "@/storage/routineStorage";
+import { RoutineHistory } from "@/types/history";
 import { Routine, RoutineType, ScheduleConfig } from "@/types/routine";
 import { scheduleRoutineNotifications } from "@/utils/routineNotifications";
 import * as Crypto from "expo-crypto";
 
 const generateId = () => Crypto.randomUUID();
+
+export const getNextPetFeedingTime = (
+  feedingTimes: string[],
+  now: Date = new Date(),
+): Date | null => {
+  if (!feedingTimes.length) return null;
+
+  // Sort times just in case
+  const sorted = [...feedingTimes].sort();
+
+  for (const time of sorted) {
+    const [hour, minute] = time.split(":").map(Number);
+
+    const candidate = new Date(now);
+    candidate.setHours(hour, minute, 0, 0);
+
+    if (candidate > now) {
+      return candidate;
+    }
+  }
+
+  // No time left today → return tomorrow's first feeding
+  const [hour, minute] = sorted[0].split(":").map(Number);
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(hour, minute, 0, 0);
+
+  return tomorrow;
+};
+
+export const getNextTrashPickupDate = (
+  pickupDays: number[],
+  now: Date = new Date(),
+): Date | null => {
+  if (!pickupDays.length) return null;
+
+  const today = now.getDay();
+
+  // Try next 7 days
+  for (let i = 0; i < 7; i++) {
+    const dayToCheck = (today + i) % 7;
+
+    if (pickupDays.includes(dayToCheck)) {
+      const candidate = new Date(now);
+      candidate.setDate(now.getDate() + i);
+      candidate.setHours(9, 0, 0, 0); // 9am pickup (adjustable)
+
+      // If today, ensure it's still upcoming
+      if (candidate > now) {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+};
 
 const computeNextReminder = (
   type: RoutineType,
@@ -21,10 +83,10 @@ const computeNextReminder = (
         : null;
 
     case "pet":
-      return now; // next feeding is "now"
+      return getNextPetFeedingTime(config.feedingTimes ?? [], now);
 
     case "trash":
-      return now; // next pickup is calculated later
+      return getNextTrashPickupDate(config.pickupDays ?? [], now);
   }
 };
 
@@ -103,4 +165,32 @@ export const updateRoutineWithNotifications = async (
 
   await scheduleRoutineNotifications(updated);
   return updated;
+};
+
+export const computeDailyStats = (
+  routines: Routine[],
+  history: RoutineHistory[],
+) => {
+  const completedTodayRoutineIds = new Set(
+    history
+      .filter((h) => isToday(new Date(h.completedAt)))
+      .map((h) => h.routineId),
+  );
+
+  const total = routines.length;
+  const done = completedTodayRoutineIds.size;
+  const needsAttention = total - done;
+
+  return {
+    total,
+    done,
+    needsAttention,
+  };
+};
+
+export const getDailyStats = async () => {
+  const routines = await getRoutines();
+  const history = await getHistory();
+
+  return computeDailyStats(routines, history);
 };
