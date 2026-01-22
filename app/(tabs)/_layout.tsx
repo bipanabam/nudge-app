@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React from "react";
 import { View } from "react-native";
 
@@ -21,6 +22,9 @@ const TabIcon = ({ focused, name }: any) => (
 );
 
 const _Layout = () => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+
   return (
     <Tabs
       screenOptions={{
@@ -41,9 +45,9 @@ const _Layout = () => {
           marginBottom: 30,
           position: "absolute",
           borderWidth: 1,
-          borderColor: "#7FAE9A",
           // Add elevation and shadow for a "floating" look
-          backgroundColor: "white",
+          backgroundColor: isDark ? "#0F1A17" : "#F6F7F5",
+          borderColor: isDark ? "#1F2D28" : "#E5E7EB",
           elevation: 5,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 10 },

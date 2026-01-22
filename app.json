@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "nudge_app",
-    "slug": "nudge_app",
+    "slug": "Nudge",
     "version": "1.0.0",
     "orientation": "portrait",
     "notification": {

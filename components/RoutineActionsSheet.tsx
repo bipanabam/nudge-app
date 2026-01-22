@@ -1,13 +1,13 @@
 import { getRoutineIcon } from "@/types/routine";
 import { Feather } from "@expo/vector-icons";
 import {
-    BottomSheetBackdrop,
-    BottomSheetModal,
-    BottomSheetView,
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { BlurView } from "expo-blur";
 import { forwardRef, useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, useColorScheme } from "react-native";
 
 type Props = {
   routineName?: string;
@@ -20,6 +20,8 @@ type Props = {
 export const RoutineActionsSheet = forwardRef<BottomSheetModal, Props>(
   ({ routineName, routineType, onEdit, onDelete, onBack }, ref) => {
     const snapPoints = useMemo(() => ["40%"], []);
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === "dark";
 
     const renderBackdrop = (props: any) => (
       <BottomSheetBackdrop
@@ -39,8 +41,14 @@ export const RoutineActionsSheet = forwardRef<BottomSheetModal, Props>(
         snapPoints={snapPoints}
         enablePanDownToClose
         backdropComponent={renderBackdrop}
-        handleIndicatorStyle={{ backgroundColor: "white", width: 40 }}
-        backgroundStyle={{ backgroundColor: "#E8E6E1", borderRadius: 32 }}
+        handleIndicatorStyle={{
+          backgroundColor: isDarkMode ? "black" : "#D1D1D1",
+          width: 40,
+        }}
+        backgroundStyle={{
+          backgroundColor: isDarkMode ? "#1C1C1E" : "#E8E6E1",
+          borderRadius: 32,
+        }}
       >
         <BottomSheetView className="px-6 py-4 pb-12 gap-4">
           {/* Header */}
@@ -50,7 +58,7 @@ export const RoutineActionsSheet = forwardRef<BottomSheetModal, Props>(
                 {getRoutineIcon(routineType)}
               </Text>
               <View className="flex-col items-start">
-                <Text className="text-2xl font-bold text-foreground">
+                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">
                   {routineName}
                 </Text>
                 <Text className="text-gray-500">Choose an action</Text>
@@ -58,23 +66,31 @@ export const RoutineActionsSheet = forwardRef<BottomSheetModal, Props>(
             </View>
             <Pressable
               onPress={() => onBack()}
-              className="rounded-xl h-9 w-9 items-center justify-center bg-secondary"
+              className="rounded-xl h-9 w-9 items-center justify-center bg-secondary dark:bg-muted-dark"
             >
-              <Text className="text-lg text-foreground">✕</Text>
+              <Text className="text-lg text-foreground dark:text-foreground-dark">
+                ✕
+              </Text>
             </Pressable>
           </View>
 
           {/* Edit */}
           <Pressable
             onPress={onEdit}
-            className="flex-row items-center gap-3 p-4 rounded-xl bg-secondary"
+            className="flex-row items-center gap-3 p-4 rounded-xl bg-secondary dark:bg-muted-dark mb-1"
           >
-            <View className="rounded-[10px] items-center justify-center bg-card w-10 h-10">
-              <Feather name="edit-2" size={18} color="#7FAE9A" />
+            <View className="rounded-[10px] items-center justify-center bg-card dark:bg-card-dark w-10 h-10">
+              <Feather
+                name="edit-2"
+                size={18}
+                color={isDarkMode ? "white" : "#7FAE9A"}
+              />
             </View>
             <View>
-              <Text className="font-medium">Edit Routine</Text>
-              <Text className="text-xs text-muted-foreground text-gray-500">
+              <Text className="font-medium text-foreground dark:text-foreground-dark">
+                Edit Routine
+              </Text>
+              <Text className="text-xs text-mutedForeground dark:text-mutedForeground-dark">
                 Change name or schedule
               </Text>
             </View>
@@ -83,14 +99,16 @@ export const RoutineActionsSheet = forwardRef<BottomSheetModal, Props>(
           {/* Delete */}
           <Pressable
             onPress={onDelete}
-            className="flex-row items-center gap-3 p-4 rounded-xl bg-red-50 mb-8"
+            className="flex-row items-center gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 mb-8"
           >
-            <View className="rounded-[10px] items-center justify-center bg-red-100 w-10 h-10">
+            <View className="rounded-[10px] items-center justify-center bg-red-100 dark:bg-red-900/50 w-10 h-10">
               <Feather name="trash-2" size={18} color="#DC2626" />
             </View>
             <View>
-              <Text className="font-medium text-red-600">Delete Routine</Text>
-              <Text className="text-xs text-gray-500">
+              <Text className="font-medium text-red-600 dark:text-red-500">
+                Delete Routine
+              </Text>
+              <Text className="text-xs text-mutedForeground dark:text-mutedForeground-dark">
                 Remove this routine permanently
               </Text>
             </View>

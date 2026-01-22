@@ -4,7 +4,8 @@ import { ScrollView, Text, View } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { NudgeLogo } from "@/components/NudgeLogo";
+import Header from "@/components/Header";
+import { formatTime12h } from "@/hooks/helpers";
 import { getHistory } from "@/storage/historyStorage";
 import { RoutineHistory } from "@/types/history";
 import { getRoutineIcon } from "@/types/routine";
@@ -55,7 +56,10 @@ const History = () => {
   const grouped = groupByDate(history);
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
+    <SafeAreaView
+      edges={["top"]}
+      className="flex-1 bg-background dark:bg-background-dark"
+    >
       <View className="flex-1 p-4 rounded-xl">
         <ScrollView
           className="flex-1 px-5"
@@ -63,16 +67,7 @@ const History = () => {
           contentContainerStyle={{ paddingBottom: 80 }}
         >
           {/* Header */}
-          <View className="mt-4 mb-6 gap-1">
-            <Text className="text-foreground text-sm">Good afternoon 👋</Text>
-            <NudgeLogo />
-            <Text className="text-2xl font-bold text-foreground mt-2">
-              Activity History
-            </Text>
-            <Text className="text-md text-mutedForeground">
-              Your completed routines
-            </Text>
-          </View>
+          <Header title="Activity History" subtitle="Your completed routines" />
 
           {/* History */}
           {history.length === 0 && (
@@ -94,7 +89,7 @@ const History = () => {
               {items.map((item) => (
                 <View
                   key={item.id}
-                  className="bg-card rounded-xl p-4 mb-3 flex-row justify-between items-center"
+                  className="bg-card dark:bg-card-dark rounded-xl p-4 mb-3 flex-row justify-between items-center"
                 >
                   <View className="flex-row items-center gap-3">
                     <Text className="text-2xl">
@@ -102,11 +97,11 @@ const History = () => {
                     </Text>
 
                     <View>
-                      <Text className="font-semibold text-foreground">
+                      <Text className="text-lg font-semibold text-foreground dark:text-white">
                         {item.name}
                       </Text>
                       <Text className="text-sm text-mutedForeground">
-                        {formatTime(item.completedAt)}
+                        {formatTime12h(formatTime(item.completedAt))}
                       </Text>
                     </View>
                   </View>

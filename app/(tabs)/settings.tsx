@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { NudgeLogo } from "@/components/NudgeLogo";
+import Header from "@/components/Header";
 import { SettingsBanner } from "@/components/settings/SettingsBanner";
 import { SettingsItem } from "@/components/settings/SettingsItem";
 import { SettingsSection } from "@/components/settings/SettingsSection";
@@ -22,6 +22,7 @@ const testNotification = async () => {
     "Notifications are working!",
     date,
     "test-id",
+    "",
   );
 };
 
@@ -30,7 +31,10 @@ export default function Settings() {
   const confirmDeleteRef = useRef<BottomSheetModal>(null);
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
+    <SafeAreaView
+      edges={["top"]}
+      className="flex-1 bg-background dark:bg-background-dark"
+    >
       <View className="flex-1 p-4 rounded-xl">
         <ScrollView
           className="flex-1 px-5"
@@ -38,16 +42,7 @@ export default function Settings() {
           contentContainerStyle={{ paddingBottom: 80 }}
         >
           {/* Header */}
-          <View className="mt-4 mb-6 gap-1">
-            <Text className="text-foreground text-sm">Good afternoon 👋</Text>
-            <NudgeLogo />
-            <Text className="text-2xl font-bold text-foreground mt-2">
-              Settings
-            </Text>
-            <Text className="text-md text-mutedForeground">
-              Customize your experience
-            </Text>
-          </View>
+          <Header title="Settings" subtitle="Customize your experience" />
 
           {/* Banner */}
           <SettingsBanner />

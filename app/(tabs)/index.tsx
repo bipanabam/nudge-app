@@ -1,4 +1,3 @@
-import { NudgeLogo } from "@/components/NudgeLogo";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
@@ -11,14 +10,13 @@ import { RoutineActionsSheet } from "@/components/RoutineActionsSheet";
 import { RoutineCard } from "@/components/RoutineCard";
 import { RoutineFormSheet } from "@/components/RoutineFormSheet";
 import { completeRoutine } from "@/factories/routineManager";
-import {
-  getRoutineById,
-  saveRoutine
-} from "@/storage/routineStorage";
+import { getRoutineById, saveRoutine } from "@/storage/routineStorage";
 import { Routine, showRoutineToast } from "@/types/routine";
 
+import Header from "@/components/Header";
 import { useRoutines } from "@/hooks/useRoutines";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function Index() {
   const { routines, setRoutines, refreshRoutines } = useRoutines();
@@ -34,20 +32,6 @@ export default function Index() {
 
   const handlePresentPress = () => routineFormRef.current?.present();
   const handleClosePress = () => routineFormRef.current?.dismiss();
-
-  // const loadRoutines = async () => {
-  //   const stored = await AsyncStorage.getItem("routines");
-  //   if (!stored) {
-  //     await AsyncStorage.setItem("routines", JSON.stringify(defaultRoutines));
-  //     setRoutines();
-  //   } else {
-  //     setRoutines(JSON.parse(stored));
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   loadRoutines();
-  // }, []);
 
   const handleCompleteRoutine = async (id: string) => {
     const routine = await getRoutineById(id);
@@ -75,8 +59,11 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1">
-      <View className="flex-1 bg-background">
+    <SafeAreaView
+      edges={["top"]}
+      className="flex-1 bg-background dark:bg-background-dark"
+    >
+      <View className="flex-1 bg-background dark:bg-background-dark">
         <View className="flex-1 p-4 rounded-xl">
           <ScrollView
             className="flex-1 px-5"
@@ -86,11 +73,9 @@ export default function Index() {
               paddingBottom: 70,
             }}
           >
-            {/* Logo */}
-            <View className="flex-col mb-5 mt-4 gap-1">
-              <Text className="text-foreground text-sm">Good afternoon 👋</Text>
-              <NudgeLogo />
-            </View>
+            {/* Header */}
+            <Header />
+
             {/* Stats */}
             {/* Routine */}
             {routines.map((routine) => (
@@ -156,6 +141,12 @@ export default function Index() {
 
           setRoutines(updated);
           await AsyncStorage.setItem("routines", JSON.stringify(updated));
+
+          Toast.show({
+            type: "success",
+            text1: `Routine deleted successfully`,
+          });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
           confirmDeleteRef.current?.dismiss();
           actionsSheetRef.current?.dismiss();

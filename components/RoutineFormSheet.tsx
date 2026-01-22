@@ -3,6 +3,7 @@ import {
   initRoutine,
   updateRoutineWithNotifications,
 } from "@/factories/routineManager";
+import { formatTime12h } from "@/hooks/helpers";
 import { addRoutine, updateRoutine } from "@/storage/routineStorage";
 import { Routine, RoutineType } from "@/types/routine";
 import { Feather } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -38,15 +40,6 @@ const namePlaceholder: Record<RoutineType, string> = {
   trash: "e.g., Recycling Pickup",
 };
 
-export const formatTime12h = (time24: string) => {
-  const [h, m] = time24.split(":").map(Number);
-
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 || 12;
-
-  return `${hour12}:${m.toString().padStart(2, "0")} ${period}`;
-};
-
 export const RoutineFormSheet = forwardRef<
   BottomSheetModal,
   {
@@ -55,6 +48,8 @@ export const RoutineFormSheet = forwardRef<
     onDone: () => void;
   }
 >(({ mode, routine, onDone }, ref) => {
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   const [type, setType] = useState<RoutineType>("laundry");
   const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -232,8 +227,14 @@ export const RoutineFormSheet = forwardRef<
       enableDynamicSizing={false}
       onDismiss={resetForm}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: "#D1D1D1", width: 40 }}
-      backgroundStyle={{ backgroundColor: "#E8E6E1", borderRadius: 32 }}
+      handleIndicatorStyle={{
+        backgroundColor: isDarkMode ? "black" : "#D1D1D1",
+        width: 40,
+      }}
+      backgroundStyle={{
+        backgroundColor: isDarkMode ? "#1C1C1E" : "#E8E6E1", // dark/light mode
+        borderRadius: 32,
+      }}
     >
       <ScrollView
         contentContainerStyle={{ paddingBottom: 80, flexGrow: 1 }}
@@ -242,20 +243,22 @@ export const RoutineFormSheet = forwardRef<
       >
         {/* Header */}
         <View className="flex-row justify-between items-center mb-5">
-          <Text className="text-2xl font-bold text-foreground">
+          <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">
             {mode === "add" ? "Add Routine" : "Edit Routine"}
           </Text>
           <Pressable
             onPress={() => onDone()}
-            className="rounded-xl h-9 w-9 items-center justify-center bg-secondary"
+            className="rounded-xl h-9 w-9 items-center justify-center bg-secondary dark:bg-card-dark"
           >
-            <Text className="text-lg text-foreground">✕</Text>
+            <Text className="text-lg text-foreground dark:text-foreground-dark">
+              ✕
+            </Text>
           </Pressable>
         </View>
 
         {/* Routine Type Selector */}
         <View className="mb-4">
-          <Text className="text-lg font-bold text-foreground mb-2">
+          <Text className="text-lg font-bold text-foreground dark:text-foreground-dark mb-2">
             Routine Type
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -265,12 +268,12 @@ export const RoutineFormSheet = forwardRef<
                 onPress={() => handleTypeSelect(t)}
                 className={`px-4 py-2 rounded-2xl border ${
                   type === t
-                    ? "bg-[#6B9E9E] border-[#6B9E9E]"
-                    : "bg-white border-gray-200"
+                    ? "bg-primary border-primary"
+                    : "bg-white border-gray-200 dark:bg-muted-dark dark:border-muted-dark"
                 }`}
               >
                 <Text
-                  className={`text-base font-semibold ${type === t ? "text-white" : "text-gray-700"}`}
+                  className={`text-base font-semibold ${type === t ? "text-white" : "text-foreground dark:text-foreground-dark"}`}
                 >
                   {routineTypeConfig[t].emoji} {routineTypeConfig[t].label}
                 </Text>
@@ -281,12 +284,15 @@ export const RoutineFormSheet = forwardRef<
 
         {/* Name Input */}
         <View className="mb-5">
-          <Text className="text-lg font-bold text-foreground mb-2">Name</Text>
+          <Text className="text-lg font-bold text-foreground dark:text-foreground-dark mb-2">
+            Name
+          </Text>
           <TextInput
             placeholder={namePlaceholder[type]}
             value={name}
             onChangeText={setName}
-            className="bg-secondary rounded-2xl p-4 h-16 text-base border border-secondary shadow-sm"
+            className="bg-secondary rounded-2xl p-4 h-16 text-base border border-secondary shadow-sm 
+            dark:bg-muted-dark dark:border-muted-dark dark:text-foreground-dark"
             placeholderTextColor="#999"
           />
         </View>
@@ -295,10 +301,10 @@ export const RoutineFormSheet = forwardRef<
           {type === "laundry" && (
             <View>
               <View className="flex-row justify-between mb-4">
-                <Text className="text-lg font-bold text-foreground mb-3">
+                <Text className="text-lg font-bold text-foreground mb-3 dark:text-foreground-dark">
                   Duration
                 </Text>
-                <Text className="text-primary font-bold mr-2">
+                <Text className="text-primary dark:text-primary-dark font-bold mr-2">
                   {durationMinutes}m
                 </Text>
               </View>
@@ -316,23 +322,23 @@ export const RoutineFormSheet = forwardRef<
 
           {type === "pet" && (
             <View>
-              <Text className="text-lg font-bold text-foreground mb-3">
+              <Text className="text-lg font-bold text-foreground mb-3 dark:text-foreground-dark">
                 Feeding Times
               </Text>
               {feedingTimes.map((time, i) => (
                 <View key={i} className="flex-row items-center gap-2 mb-2">
                   <Pressable
                     onPress={() => setPickerIndex(i)}
-                    className="flex-1 flex-row items-center justify-between bg-white p-4 rounded-xl mb-2"
+                    className="flex-1 flex-row items-center justify-between bg-secondary p-4 rounded-xl mb-2 dark:bg-muted-dark"
                   >
-                    <Text className="text-base font-medium">
+                    <Text className="text-base font-medium text-foreground dark:text-foreground-dark">
                       {formatTime12h(time)}
                     </Text>
                     <Feather name="clock" size={18} color="#6B9E9E" />
                   </Pressable>
                   <Pressable
                     onPress={() => removeFeedingTime(i)}
-                    className="p-3 bg-red-50 rounded-xl"
+                    className="p-3 bg-red-50 dark:bg-red-900/30 rounded-xl"
                   >
                     <Feather name="trash-2" size={16} color="#EF4444" />
                   </Pressable>
@@ -340,7 +346,7 @@ export const RoutineFormSheet = forwardRef<
               ))}
 
               {pickerIndex !== null && (
-                <View className="bg-background rounded-3xl p-4">
+                <View className="bg-secondary dark:bg-muted-dark rounded-3xl p-4">
                   <DateTimePicker
                     mode="time"
                     value={new Date()}
@@ -353,7 +359,7 @@ export const RoutineFormSheet = forwardRef<
               )}
 
               <Pressable onPress={addFeedingTime} className="mt-2">
-                <Text className="text-primary font-semibold text-sm">
+                <Text className="text-primary dark:text-primary-dark font-semibold text-sm">
                   + Add feeding time
                 </Text>
               </Pressable>
@@ -362,24 +368,26 @@ export const RoutineFormSheet = forwardRef<
 
           {type === "trash" && (
             <View>
-              <Text className="text-lg font-bold text-foreground mb-3">
+              <Text className="text-lg font-bold text-foreground mb-3 dark:text-foreground-dark">
                 Pickup Days
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {weekDays.map((day, i) => (
                   <Pressable
                     key={day}
-                    onPress={() =>
-                      setSelectedDays((prev) =>
-                        prev.includes(i)
-                          ? prev.filter((d) => d !== i)
-                          : [...prev, i],
-                      )
-                    }
-                    className={`px-3 py-2 rounded-xl ${selectedDays.includes(i) ? "bg-[#6B9E9E]" : "bg-white border border-gray-100"}`}
+                    onPress={() => toggleDay(i)}
+                    className={`px-3 py-2 rounded-xl ${
+                      selectedDays.includes(i)
+                        ? "bg-primary border-primary"
+                        : "bg-secondary border-muted dark:bg-muted-dark dark:border-muted-dark"
+                    }`}
                   >
                     <Text
-                      className={`text-xs font-bold ${selectedDays.includes(i) ? "text-white" : "text-gray-500"}`}
+                      className={`text-xs font-bold ${
+                        selectedDays.includes(i)
+                          ? "text-white"
+                          : "text-foreground dark:text-foreground-dark"
+                      }`}
                     >
                       {day}
                     </Text>
@@ -392,10 +400,12 @@ export const RoutineFormSheet = forwardRef<
           {type === "plant" && (
             <View>
               <View className="flex-row justify-between mb-4">
-                <Text className="text-lg font-bold text-foreground mb-3">
+                <Text className="text-lg font-bold text-foreground mb-3 dark:text-foreground-dark">
                   Watering Interval (days)
                 </Text>
-                <Text className="text-primary font-bold">{intervalDays}</Text>
+                <Text className="text-primary dark:text-primary-dark font-bold">
+                  {intervalDays}
+                </Text>
               </View>
               <Slider
                 value={intervalDays}
@@ -410,53 +420,14 @@ export const RoutineFormSheet = forwardRef<
             </View>
           )}
         </View>
-        {/* 
-          {type === 'trash' && (
-            <View className="mb-6">
-              <Text className="text-sm font-semibold text-gray-900 mb-3">Pickup Days</Text>
-              <View className="flex-row flex-wrap gap-2 mb-4">
-                {weekDays.map((day, index) => (
-                  <Pressable
-                    key={index}
-                    onPress={() => toggleDay(index)}
-                    className={`px-4 py-2 rounded-lg border ${
-                      selectedDays.includes(index)
-                        ? 'bg-[#6B9E9E] border-[#6B9E9E]'
-                        : 'bg-white border-gray-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-sm font-medium ${
-                        selectedDays.includes(index) ? 'text-white' : 'text-gray-700'
-                      }`}
-                    >
-                      {day}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-              <Pressable
-                onPress={() => setIsRecycling(!isRecycling)}
-                className="flex-row items-center gap-3"
-              >
-                <View
-                  className={`w-6 h-6 rounded border-2 items-center justify-center ${
-                    isRecycling ? 'bg-[#6B9E9E] border-[#6B9E9E]' : 'bg-white border-gray-300'
-                  }`}
-                >
-                  {isRecycling && <Text className="text-white text-sm">✓</Text>}
-                </View>
-                <Text className="text-base text-gray-900">Recycling Day</Text>
-              </Pressable>
-            </View>
-          )} */}
-
         {/* Add/Edit Button */}
         <Pressable
           disabled={isSaving}
           onPress={handleSave}
           className={`rounded-xl py-4 px-5 items-center mb-6 ${
-            isSaving ? "bg-gray-400" : "bg-[#6B9E9E]"
+            isSaving
+              ? "bg-gray-400 dark:bg-gray-700"
+              : "bg-primary dark:bg-primary-dark"
           }`}
         >
           {isSaving ? (

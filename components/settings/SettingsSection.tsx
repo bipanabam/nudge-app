@@ -9,11 +9,11 @@ export function SettingsSection({
 }) {
   return (
     <View>
-      <Text className="text-sm font-bold text-mutedForeground mb-3 px-1">
+      <Text className="text-lgfont-bold text-mutedForeground mb-3 px-1">
         {title}
       </Text>
 
-      <View className="bg-card rounded-2xl divide-y border-mutedForeground">
+      <View className="bg-card rounded-2xl divide-y border-mutedForeground dark:bg-card-dark">
         {children}
       </View>
     </View>

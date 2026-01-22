@@ -79,34 +79,6 @@ export const STATUS_CONFIG: Record<RoutineStatus, StatusConfig> = {
   },
 };
 
-// export const StatusIcon = ({ status }: { status: RoutineStatus }) => {
-//   const config = STATUS_CONFIG[status];
-
-//   return (
-//     <View
-//       className={`px-2 py-2 rounded-lg flex-row items-center gap-1 ${config.bg}`}
-//     >
-//       {config.icon}
-//       <Text className={`font-semibold text-sm capitalize ${config.text}`}>
-//         {status}
-//       </Text>
-//     </View>
-//   );
-// };
-
-// export const getActionLabel = (type: RoutineType) => {
-//   switch (type) {
-//     case "laundry":
-//       return "Laundry Done";
-//     case "plant":
-//       return "Watered";
-//     case "pet":
-//       return "Fed";
-//     case "trash":
-//       return "Taken out";
-//   }
-// };
-
 import { isToday } from "@/hooks/helpers";
 import { getHistory } from "@/storage/historyStorage";
 

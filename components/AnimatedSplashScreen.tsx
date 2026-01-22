@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
   runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import { NudgeLogo } from "./NudgeLogo";
 
@@ -20,13 +20,9 @@ export const AnimatedSplashScreen = ({ onAnimationFinish }: Props) => {
     // breathe-in pause
     const timeout = setTimeout(() => {
       scale.value = withTiming(0.9, { duration: 600 });
-      opacity.value = withTiming(
-        0,
-        { duration: 400 },
-        (finished) => {
-          if (finished) runOnJS(onAnimationFinish)();
-        }
-      );
+      opacity.value = withTiming(0, { duration: 400 }, (finished) => {
+        if (finished) runOnJS(onAnimationFinish)();
+      });
     }, 800);
 
     return () => clearTimeout(timeout);
@@ -40,7 +36,7 @@ export const AnimatedSplashScreen = ({ onAnimationFinish }: Props) => {
   return (
     <View
       style={StyleSheet.absoluteFill}
-      className="bg-background items-center justify-center z-50"
+      className="bg-background items-center justify-center z-50 dark:bg-background-dark"
     >
       <Animated.View style={animatedStyle}>
         <NudgeLogo size="lg" animated />

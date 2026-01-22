@@ -61,7 +61,7 @@ export function SettingsBanner() {
       </View>
 
       <View className="flex-1">
-        <Text className="font-semibold text-xl text-foreground">
+        <Text className="font-semibold text-xl text-foreground dark:text-white">
           {enabled ? "Notifications enabled" : "Notifications are off"}
         </Text>
 

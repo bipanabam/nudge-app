@@ -1,9 +1,9 @@
-import { Text, View } from "react-native"
+import { Text, View } from "react-native";
 
 interface NudgeLogoProps {
-  size?: "sm" | "md" | "lg"
-  showText?: boolean
-  animated?: boolean
+  size?: "sm" | "md" | "lg";
+  showText?: boolean;
+  animated?: boolean;
 }
 
 export function NudgeLogo({
@@ -15,9 +15,9 @@ export function NudgeLogo({
     sm: { circle: 24, dot: 8, text: "text-lg" },
     md: { circle: 32, dot: 10, text: "text-xl" },
     lg: { circle: 48, dot: 14, text: "text-3xl" },
-  }
+  };
 
-  const { circle, dot, text } = sizes[size]
+  const { circle, dot, text } = sizes[size];
 
   return (
     <View className="flex-row items-center gap-2">
@@ -48,11 +48,11 @@ export function NudgeLogo({
 
       {showText && (
         <Text
-          className={`font-extrabold text-foreground tracking-tight ${text}`}
+          className={`font-extrabold text-foreground dark:text-white tracking-tight ${text}`}
         >
           Nudge
         </Text>
       )}
     </View>
-  )
+  );
 }

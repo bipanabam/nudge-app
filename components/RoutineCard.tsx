@@ -21,53 +21,63 @@ const StatusIcon = ({ status }: any) => {
   if (status === "idle") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-muted text-mutedForeground`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-muted dark:bg-muted-dark`}
       >
-        <Feather name="clock" size={18} color={""} />
-        <Text className="font-semibold text-sm capitalize">{status}</Text>
+        <Feather name="clock" size={16} color="#767676" />
+        <Text className="font-semibold text-sm capitalize text-mutedForeground dark:text-mutedForeground-dark">
+          {status}
+        </Text>
       </View>
     );
   }
   if (status === "overdue") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-overdue text-red-600`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-overdue dark:bg-red-900/30`}
       >
-        <Feather name="alert-circle" size={18} color="red" />
-        <Text className="font-semibold text-sm capitalize">{status}</Text>
+        <Feather name="alert-circle" size={16} color="red" />
+        <Text className="font-semibold text-sm capitalize text-red-600">
+          {status}
+        </Text>
       </View>
     );
   }
   if (status === "active") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active text-blue-600`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-active`}
       >
-        <Feather name="alert-circle" size={18} color="blue" />
-        <Text className="font-semibold text-sm capitalize">{status}</Text>
+        <Feather name="alert-circle" size={16} color="blue" />
+        <Text className="font-semibold text-sm capitalize text-blue-600">
+          {status}
+        </Text>
       </View>
     );
   }
   if (status === "partial") {
     return (
       <View
-        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-orange-50 text-orange-600`}
+        className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-orange-200 dark:bg-amber-900/30`}
       >
         <MaterialCommunityIcons
           name="progress-check"
-          size={18}
+          size={16}
           color="orange"
         />
-        <Text className="font-semibold text-sm capitalize">{status}</Text>
+        <Text className="font-semibold text-sm capitalize text-amber-600">
+          {status}
+        </Text>
       </View>
     );
   }
   return (
     <View
-      className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-done text-green-600`}
+      className={`px-2 py-2 rounded-lg flex-row items-center gap-1 bg-status-done dark:bg-green-900/30`}
     >
-      <Feather name="check" size={18} color={"#2F3A36"} />
-      <Text className="font-semibold text-sm capitalize">{status}</Text>
+      <Feather name="check" size={16} color="green" />
+      <Text className="font-semibold text-sm capitalize text-green-700">
+        {status}
+      </Text>
     </View>
   );
 };
@@ -76,12 +86,36 @@ const StatusIcon = ({ status }: any) => {
 const routineStyles = {
   laundry: {
     bg: "bg-laundry-bg",
+    dark: "bg-laundry-bg-dark",
     fg: "text-laundry-fg",
+    fgDark: "text-laundry-fg-dark",
     button: "bg-laundry",
+    buttonDark: "bg-laundry-dark",
   },
-  plant: { bg: "bg-plant-bg", fg: "text-plant-fg", button: "bg-plant" },
-  pet: { bg: "bg-pet-bg", fg: "text-pet-fg", button: "bg-pet" },
-  trash: { bg: "bg-trash-bg", fg: "text-trash-fg", button: "bg-trash" },
+  plant: {
+    bg: "bg-plant-bg",
+    dark: "bg-plant-bg-dark",
+    fg: "text-plant-fg",
+    fgDark: "text-plant-fg-dark",
+    button: "bg-plant",
+    buttonDark: "bg-plant-dark",
+  },
+  pet: {
+    bg: "bg-pet-bg",
+    dark: "bg-pet-bg-dark",
+    fg: "text-pet-fg",
+    fgDark: "text-pet-fg-dark",
+    button: "bg-pet",
+    buttonDark: "bg-pet-dark",
+  },
+  trash: {
+    bg: "bg-trash-bg",
+    dark: "bg-trash-bg-dark",
+    fg: "text-trash-fg",
+    fgDark: "text-trash-fg-dark",
+    button: "bg-trash",
+    buttonDark: "bg-trash-dark",
+  },
 };
 
 export const RoutineCard = ({
@@ -126,7 +160,7 @@ export const RoutineCard = ({
 
   return (
     <Pressable
-      className={`rounded-xl p-5 mb-4 ${styles.bg}`}
+      className={`rounded-xl p-5 mb-4 ${styles.bg} dark:${styles.dark}`}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       style={{
@@ -137,14 +171,16 @@ export const RoutineCard = ({
       {/* Header */}
       <View className="flex-row justify-between items-start mb-3">
         <View className="flex-row items-center gap-3">
-          <Text className={`text-3xl ${styles.fg}`}>
+          <Text className={`text-3xl ${styles.fg} dark:${styles.fgDark}`}>
             {getRoutineIcon(routine.type)}
           </Text>
           <View>
-            <Text className={`font-bold text-lg ${styles.fg}`}>
+            <Text
+              className={`font-bold text-lg ${styles.fg} dark:${styles.fgDark}`}
+            >
               {routine.name}
             </Text>
-            <Text className="text-sm text-mutedForeground">
+            <Text className="text-sm text-mutedForeground dark:text-mutedForeground-dark">
               {routine.lastCompletedAt
                 ? "Last done recently"
                 : "Never completed"}
@@ -155,9 +191,14 @@ export const RoutineCard = ({
           <StatusIcon status={status} />
           <Pressable
             onPress={onMorePress}
-            className="rounded-lg items-center p-3 bg-card"
+            className="rounded-lg items-center p-3 bg-card dark:bg-card-dark"
           >
-            <Feather name="more-vertical" size={20} color="#2F3A36" />
+            <Feather
+              name="more-vertical"
+              size={20}
+              color="currentColor"
+              className="text-foreground dark:text-white"
+            />
           </Pressable>
         </View>
       </View>
@@ -165,15 +206,15 @@ export const RoutineCard = ({
       {/* Progress Section */}
       {targetCount > 1 && (
         <View className="mb-3">
-          <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-sm text-mutedForeground">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-sm text-mutedForeground dark:text-mutedForeground-dark">
               Progress: {progressCount}/{targetCount} done
             </Text>
-            <Text className="text-sm text-mutedForeground">
+            <Text className="text-sm text-mutedForeground dark:text-mutedForeground-dark">
               {Math.round(progressPercent)}%
             </Text>
           </View>
-          <View className="w-full h-2 bg-gray-200 rounded-full">
+          <View className="w-full h-2 bg-gray-200 dark:bg-background-dark rounded-full">
             <View
               className={`h-2 rounded-full ${progressColor}`}
               style={{ width: `${progressPercent}%` }}
@@ -184,7 +225,7 @@ export const RoutineCard = ({
       {/* Action */}
       <Pressable
         disabled={isDisabled}
-        className={`${styles.button} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
+        className={`${styles.button} dark:${styles.buttonDark} flex flex-row justify-center rounded-xl py-4 items-center mt-2 gap-2`}
         onPress={handleActionPress}
       >
         <Feather name={action.icon} color={"white"} size={20} />

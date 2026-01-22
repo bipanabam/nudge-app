@@ -21,7 +21,7 @@ export const ToastHost = () => {
             props: { icon?: string; onComplete?: () => void };
           }) => (
             <View
-              className="mx-4 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 shadow-xl shadow-black/5 flex-row items-center justify-between"
+              className="mx-4 bg-secondary dark:bg-muted-dark border border-secondary dark:border-muted-dark rounded-2xl p-4 shadow-xl shadow-black/5 flex-row items-center justify-between"
               style={{ width: "92%" }}
             >
               <View className="flex-row items-center flex-1 mr-2">
@@ -34,13 +34,13 @@ export const ToastHost = () => {
                 </View>
                 <View className="flex-1">
                   <Text
-                    className="text-foreground font-bold text-sm leading-tight"
+                    className="text-foreground dark:text-foreground-dark font-bold text-sm leading-tight"
                     numberOfLines={1}
                   >
                     {text1}
                   </Text>
                   <Text
-                    className="text-mutedForeground text-xs mt-0.5"
+                    className="text-mutedForeground text-xs mt-0.5 dark:text-mutedForeground-dark"
                     numberOfLines={1}
                   >
                     {text2}
@@ -58,21 +58,23 @@ export const ToastHost = () => {
                     props.onComplete?.();
                     Toast.hide();
                   }}
-                  className="bg-primary px-3 py-2 rounded-xl flex-row items-center gap-1 active:opacity-80"
+                  className="bg-primary px-3 py-2 rounded-xl flex-row items-center gap-1 active:opacity-80 dark:bg-primary-dark"
                 >
                   <Check size={14} color="white" strokeWidth={3} />
-                  <Text className="text-white font-bold text-xs">Done</Text>
+                  <Text className="text-white font-bold text-xs dark:text-foreground">
+                    Done
+                  </Text>
                 </Pressable>
               )}
             </View>
           ),
           info: (internalProps) => (
             <View className="mx-4 bg-zinc-800 rounded-xl p-4 w-[90%]">
-              <Text className="text-white font-bold">
+              <Text className="text-secondary font-bold dark:text-muted-dark">
                 {internalProps.text1}
               </Text>
               {internalProps.text2 && (
-                <Text className="text-zinc-300 text-xs">
+                <Text className="text-muted text-xs dark:text-muted-dark">
                   {internalProps.text2}
                 </Text>
               )}
