@@ -5,6 +5,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost, PortalProvider } from "@gorhom/portal";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+// import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -20,6 +21,7 @@ import { rescheduleAllRoutines } from "@/utils/routineNotifications";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // const { setColorScheme } = useColorScheme();
   const { isFirstLaunch, isLoading } = useFirstLaunch();
   const [isAppReady, setIsAppReady] = useState(false);
   const [isSplashAnimationComplete, setIsSplashAnimationComplete] =
@@ -40,15 +42,13 @@ export default function RootLayout() {
     }
   }, [isLoading]);
 
-  if (!isAppReady || !isSplashAnimationComplete) {
-    return (
-      <SafeAreaProvider>
-        <AnimatedSplashScreen
-          onAnimationFinish={() => setIsSplashAnimationComplete(true)}
-        />
-      </SafeAreaProvider>
-    );
-  }
+  // useEffect(() => {
+  //   AsyncStorage.getItem("theme").then((theme) => {
+  //     if (theme === "dark" || theme === "light") {
+  //       setColorScheme(theme);
+  //     }
+  //   });
+  // }, []);
 
   if (isLoading) return null;
 
@@ -74,6 +74,12 @@ export default function RootLayout() {
                   )}
                 </Stack>
               </>
+              {/* SPLASH OVERLAY */}
+              {!isSplashAnimationComplete && (
+                <AnimatedSplashScreen
+                  onAnimationFinish={() => setIsSplashAnimationComplete(true)}
+                />
+              )}
             </BottomSheetModalProvider>
             <ToastHost />
           </PortalProvider>
