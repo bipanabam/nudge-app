@@ -1,6 +1,8 @@
+import { RoutineFormSheet } from "@/components/RoutineFormSheet";
 import { Feather } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -20,6 +22,8 @@ import { getHistory } from "@/storage/historyStorage";
 import { getRoutineById } from "@/storage/routineStorage";
 import { RoutineHistory } from "@/types/history";
 import { Routine, getRoutineIcon, routineStyles } from "@/types/routine";
+
+import Timeline from "@/components/TimeLine";
 
 const StatCard = ({ label, value }: { label: string; value: string }) => (
   <View className="w-[48%] rounded-xl p-4 bg-muted dark:bg-muted-dark">
@@ -79,17 +83,29 @@ export default function RoutineDetail() {
   const [style, setStyle] = useState<any>(null);
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
+  const routineFormRef = useRef<BottomSheetModal>(null);
+
+  const openEditSchedule = () => routineFormRef.current?.present();
 
   useEffect(() => {
+    let mounted = true;
+
     const load = async () => {
       const r = await getRoutineById(id);
       const h = await getHistory();
+      if (!mounted) return; // <— stop if unmounted
+
       setRoutine(r);
       const type = r ? r.type : "laundry";
       setStyle(routineStyles[type]);
       setHistory(h.filter((x) => x.routineId === id));
     };
+
     load();
+
+    return () => {
+      mounted = false; // mark as unmounted
+    };
   }, [id]);
 
   if (!routine) return null;
@@ -119,7 +135,7 @@ export default function RoutineDetail() {
       className="flex-1 bg-background dark:bg-background-dark"
       edges={["top"]}
     >
-      <View className="flex-1 p-4">
+      <View className="flex-1 p-5">
         <ScrollView
           className="flex-1 px-5"
           showsVerticalScrollIndicator={false}
@@ -157,15 +173,27 @@ export default function RoutineDetail() {
             </Text>
 
             {/* Schedule */}
-            <View className="mt-4 rounded-xl p-4 bg-muted dark:bg-muted-dark">
-              <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-mutedForeground-dark mb-1">
-                Schedule
-              </Text>
+            <Pressable
+              onPress={openEditSchedule}
+              className="mt-4 rounded-xl p-4 bg-secondary dark:bg-muted-dark"
+            >
+              <View className="flex-row justify-between items-center mb-2">
+                <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-mutedForeground-dark mb-1">
+                  Schedule
+                </Text>
+                <View>
+                  <Feather
+                    name="edit-2"
+                    size={12}
+                    color={isDarkMode ? "white" : "#767676"}
+                  />
+                </View>
+              </View>
 
               <Text className="text-base font-semibold text-foreground dark:text-foreground-dark">
                 {formatSchedule(routine)}
               </Text>
-            </View>
+            </Pressable>
           </View>
 
           {/* Stats */}
@@ -184,6 +212,14 @@ export default function RoutineDetail() {
               label="Next Due"
               value={formatDate(routine.nextReminderAt)}
             />
+          </View>
+
+          {/* Timeline */}
+          <Text className="font-bold text-xl mb-3 mt-6 text-foreground dark:text-foreground-dark">
+            This Week
+          </Text>
+          <View className="mt-3">
+            <Timeline routine={routine} history={history} />
           </View>
 
           {/* History */}
@@ -215,6 +251,18 @@ export default function RoutineDetail() {
           ))}
         </ScrollView>
       </View>
+      <RoutineFormSheet
+        ref={routineFormRef}
+        mode="edit"
+        routine={routine}
+        onDone={async () => {
+          let mounted = true;
+          routineFormRef.current?.dismiss();
+          const updated = await getRoutineById(id);
+          if (!mounted) return; // stop if unmounted
+          setRoutine(updated);
+        }}
+      />
     </SafeAreaView>
   );
 }
