@@ -3,10 +3,13 @@ import {
   RoutineStatus,
   getRoutineActionConfig,
   getRoutineIcon,
+  routineStyles,
 } from "@/types/routine";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, useColorScheme } from "react-native";
+
 interface RoutineCardProps {
   routine: Routine;
   status: RoutineStatus;
@@ -82,42 +85,6 @@ const StatusIcon = ({ status }: any) => {
   );
 };
 
-// Map routine types to their full class names
-const routineStyles = {
-  laundry: {
-    bg: "bg-laundry-bg",
-    dark: "dark:bg-laundry-bg-dark",
-    fg: "text-laundry-fg",
-    fgDark: "dark:text-laundry-fg-dark",
-    button: "bg-laundry",
-    buttonDark: "dark:bg-laundry-dark",
-  },
-  plant: {
-    bg: "bg-plant-bg",
-    dark: "dark:bg-plant-bg-dark",
-    fg: "text-plant-fg",
-    fgDark: "dark:text-plant-fg-dark",
-    button: "bg-plant",
-    buttonDark: "dark:bg-plant-dark",
-  },
-  pet: {
-    bg: "bg-pet-bg",
-    dark: "dark:bg-pet-bg-dark",
-    fg: "text-pet-fg",
-    fgDark: "dark:text-pet-fg-dark",
-    button: "bg-pet",
-    buttonDark: "dark:bg-pet-dark",
-  },
-  trash: {
-    bg: "bg-trash-bg",
-    dark: "dark:bg-trash-bg-dark",
-    fg: "text-trash-fg",
-    fgDark: "dark:text-trash-fg-dark",
-    button: "bg-trash",
-    buttonDark: "dark:bg-trash-dark",
-  },
-};
-
 export const RoutineCard = ({
   routine,
   status,
@@ -127,7 +94,9 @@ export const RoutineCard = ({
   onComplete,
   onStartLaundry,
 }: RoutineCardProps) => {
+  const router = useRouter();
   const [pressed, setPressed] = useState(false);
+  const isDarkMode = useColorScheme() === "dark";
 
   const styles = routineStyles[routine.type];
   const action = getRoutineActionConfig(
@@ -137,7 +106,6 @@ export const RoutineCard = ({
     targetCount,
   );
   const isDisabled = action.action === "noop";
-
   const progressPercent = targetCount ? (progressCount / targetCount) * 100 : 0;
 
   const handleActionPress = () => {
@@ -175,9 +143,25 @@ export const RoutineCard = ({
             {getRoutineIcon(routine.type)}
           </Text>
           <View>
-            <Text className={`font-bold text-lg ${styles.fg} ${styles.fgDark}`}>
-              {routine.name}
-            </Text>
+            <View className="flex-row items-center gap-2">
+              <Text
+                className={`font-bold text-lg ${styles.fg} ${styles.fgDark}`}
+              >
+                {routine.name}
+              </Text>
+
+              <Pressable
+                onPress={() => router.push(`/routines/${routine.id}`)}
+                hitSlop={8}
+              >
+                <Feather
+                  name="chevron-right"
+                  size={16}
+                  color={isDarkMode ? "white" : "black"}
+                  className="text-mutedForeground dark:text-mutedForeground-dark"
+                />
+              </Pressable>
+            </View>
             <Text className="text-sm text-mutedForeground dark:text-mutedForeground-dark">
               {routine.lastCompletedAt
                 ? "Last done recently"

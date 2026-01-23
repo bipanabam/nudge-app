@@ -297,3 +297,38 @@ export const showRoutineToast = (
     });
   }
 };
+
+export const routineStyles = {
+  laundry: {
+    bg: "bg-laundry-bg",
+    dark: "dark:bg-laundry-bg-dark",
+    fg: "text-laundry-fg",
+    fgDark: "dark:text-laundry-fg-dark",
+    button: "bg-laundry",
+    buttonDark: "dark:bg-laundry-dark",
+  },
+  plant: {
+    bg: "bg-plant-bg",
+    dark: "dark:bg-plant-bg-dark",
+    fg: "text-plant-fg",
+    fgDark: "dark:text-plant-fg-dark",
+    button: "bg-plant",
+    buttonDark: "dark:bg-plant-dark",
+  },
+  pet: {
+    bg: "bg-pet-bg",
+    dark: "dark:bg-pet-bg-dark",
+    fg: "text-pet-fg",
+    fgDark: "dark:text-pet-fg-dark",
+    button: "bg-pet",
+    buttonDark: "dark:bg-pet-dark",
+  },
+  trash: {
+    bg: "bg-trash-bg",
+    dark: "dark:bg-trash-bg-dark",
+    fg: "text-trash-fg",
+    fgDark: "dark:text-trash-fg-dark",
+    button: "bg-trash",
+    buttonDark: "dark:bg-trash-dark",
+  },
+};

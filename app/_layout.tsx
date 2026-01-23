@@ -3,9 +3,10 @@ import { ToastHost } from "@/components/ToastHost";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost, PortalProvider } from "@gorhom/portal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-// import { useColorScheme } from "nativewind";
+import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -21,7 +22,7 @@ import { rescheduleAllRoutines } from "@/utils/routineNotifications";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // const { setColorScheme } = useColorScheme();
+  const { setColorScheme } = useColorScheme();
   const { isFirstLaunch, isLoading } = useFirstLaunch();
   const [isAppReady, setIsAppReady] = useState(false);
   const [isSplashAnimationComplete, setIsSplashAnimationComplete] =
@@ -42,13 +43,13 @@ export default function RootLayout() {
     }
   }, [isLoading]);
 
-  // useEffect(() => {
-  //   AsyncStorage.getItem("theme").then((theme) => {
-  //     if (theme === "dark" || theme === "light") {
-  //       setColorScheme(theme);
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    AsyncStorage.getItem("theme").then((theme) => {
+      if (theme === "dark" || theme === "light") {
+        setColorScheme(theme);
+      }
+    });
+  }, []);
 
   if (isLoading) return null;
 
@@ -72,6 +73,10 @@ export default function RootLayout() {
                       options={{ animation: "fade" }}
                     />
                   )}
+                  <Stack.Screen
+                    name="routines/[id]"
+                    options={{ animation: "fade" }}
+                  />
                 </Stack>
               </>
               {/* SPLASH OVERLAY */}

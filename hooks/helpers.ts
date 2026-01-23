@@ -15,3 +15,24 @@ export const formatTime12h = (time24: string) => {
 
   return `${hour12}:${m.toString().padStart(2, "0")} ${period}`;
 };
+
+export const daysAgo = (date: Date) =>
+  Math.floor((Date.now() - date.getTime()) / 86400000);
+
+export const formatDate = (date?: Date | null) =>
+  date
+    ? date.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Never";
+
+export const formatStringToDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });

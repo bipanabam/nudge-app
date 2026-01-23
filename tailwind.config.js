@@ -6,6 +6,7 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./routine/**/*.{js,jsx,ts,tsx}",
     "./src/**/*.{js,jsx,ts,tsx}",
+    "./types/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
   theme: {
@@ -55,7 +56,7 @@ module.exports = {
 
         // Routine colors
         laundry: { DEFAULT: "#8FB8C8", dark: "hsl(197 31% 60%)" },
-        "laundry-bg": { DEFAULT: "#EEF6FA", dark: "hsl(197 25% 10%)" },
+        "laundry-bg": { DEFAULT: "#ebf2f4", dark: "hsl(197 25% 10%)" },
         "laundry-fg": { DEFAULT: "#2C5363", dark: "hsl(197 31% 85%)" },
         plant: { DEFAULT: "#6FAF8F", dark: "hsl(150 26% 45%)" },
         "plant-bg": { DEFAULT: "#EAF7F0", dark: "hsl(150 20% 12%)" },

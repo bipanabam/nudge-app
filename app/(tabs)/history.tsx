@@ -5,17 +5,10 @@ import { EventRegister } from "react-native-event-listeners";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "@/components/Header";
-import { formatTime12h } from "@/hooks/helpers";
+import { formatStringToDate, formatTime12h } from "@/hooks/helpers";
 import { getHistory } from "@/storage/historyStorage";
 import { RoutineHistory } from "@/types/history";
 import { getRoutineIcon } from "@/types/routine";
-
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  });
 
 const formatTime = (date: Date) =>
   date.toLocaleTimeString(undefined, {
@@ -82,7 +75,7 @@ const History = () => {
             <View key={date} className="mb-6">
               {/* Date header */}
               <Text className="text-mutedForeground font-semibold mb-3">
-                {formatDate(date)}
+                {formatStringToDate(date)}
               </Text>
 
               {/* Cards */}
